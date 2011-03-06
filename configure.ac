@@ -1,7 +1,7 @@
 # Require a somewhat recent version of autoconf
 AC_PREREQ(2.59)
 
-# Set up packacge name, version, and bug-reports email
+# Set up package name, version, and bug-reports email
 # These can later be referenced in the code as PACKAGE_VERSION,... and
 # in the Makefile.am as VERSION
 #
