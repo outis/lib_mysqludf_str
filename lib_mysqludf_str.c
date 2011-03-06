@@ -1,8 +1,9 @@
+/* -*- coding: utf-8; tab-width: 4; indent-tabs-mode: t -*- */
 /*
 	lib_mysqludf_str - a library of functions to work with strings
-	Copyright (C) 2007  Claudio Cherubino
-	web: http://www.claudiocherubino.it 
-	email: claudiocherubino@gmail.com
+	Copyright © 2011  Daniel Trebbien <dtrebbien@gmail.com>
+	Copyright © 2007  Claudio Cherubino <claudiocherubino@gmail.com>
+	web: http://www.claudiocherubino.it
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
