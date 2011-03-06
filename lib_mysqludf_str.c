@@ -74,6 +74,26 @@ typedef long long longlong;
 #include <mysql.h>
 #include <ctype.h>
 
+#ifdef __GNUC__
+/* From Check:  http://check.svn.sourceforge.net/viewvc/check/trunk/src/check.h.in?revision=HEAD
+   License: LGPL 2.1 or later */
+#ifdef __GNUC_MINOR__
+#define GCC_VERSION_AT_LEAST(major, minor) \
+		((__GNUC__ > (major)) || \
+		 (__GNUC__ == (major) && __GNUC_MINOR__ >= (minor)))
+#else
+#define GCC_VERSION_AT_LEAST(major, minor) 0
+#endif /* __GNUC_MINOR__ */
+
+#if GCC_VERSION_AT_LEAST(2, 95)
+#define ATTRIBUTE_UNUSED __attribute__ ((unused))
+#else
+#define ATTRIBUTE_UNUSED 
+#endif
+#else
+#define ATTRIBUTE_UNUSED 
+#endif
+
 #ifdef HAVE_DLOPEN
 
 #define LIBVERSION "lib_mysqludf_str version 0.1.1"
@@ -180,7 +200,7 @@ my_bool lib_mysqludf_str_info_init(UDF_INIT *initid, UDF_ARGS *args, char *messa
 **					lib_mysqludf_str_info_init() and lib_mysqludf_str_info())
 ** returns:	nothing
 ******************************************************************************/
-void lib_mysqludf_str_info_deinit(UDF_INIT *initid __attribute__((unused)))
+void lib_mysqludf_str_info_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
 {
 }
 
@@ -242,7 +262,7 @@ my_bool str_numtowords_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 **					str_numtowords_init() and str_numtowords())
 ** returns:	nothing
 ******************************************************************************/
-void str_numtowords_deinit(UDF_INIT *initid __attribute__((unused)))
+void str_numtowords_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
 {
 }
 
@@ -362,7 +382,7 @@ my_bool str_rot13_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 **					str_rot13_init() and str_rot13())
 ** returns:	nothing
 ******************************************************************************/
-void str_rot13_deinit(UDF_INIT *initid __attribute__((unused)))
+void str_rot13_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
 {
 }
 
@@ -455,7 +475,7 @@ my_bool str_shuffle_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 **					str_shuffle_init() and str_shuffle())
 ** returns:	nothing
 ******************************************************************************/
-void str_shuffle_deinit(UDF_INIT *initid __attribute__((unused)))
+void str_shuffle_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
 {
 }
 
@@ -539,7 +559,7 @@ my_bool str_translate_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 **					str_translate_init() and str_translate())
 ** returns:	nothing
 ******************************************************************************/
-void str_translate_deinit(UDF_INIT *initid __attribute__((unused)))
+void str_translate_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
 {
 }
 
@@ -630,7 +650,7 @@ my_bool str_ucfirst_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 **					str_ucfirst_init() and str_ucfirst())
 ** returns:	nothing
 ******************************************************************************/
-void str_ucfirst_deinit(UDF_INIT *initid __attribute__((unused)))
+void str_ucfirst_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
 {
 }
 
@@ -698,7 +718,7 @@ my_bool str_ucwords_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 **					str_ucwords_init() and str_ucwords())
 ** returns:	nothing
 ******************************************************************************/
-void str_ucwords_deinit(UDF_INIT *initid __attribute__((unused)))
+void str_ucwords_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
 {
 }
 
