@@ -27,26 +27,7 @@
 	Compile with (adapt the include path to your environment):
 	> gcc -Wall -I/usr/include/mysql -shared lib_mysqludf_str.c -olib_mysqludf_str.so
 
-	Add the lib_mysqludf_str_info function to MySQL with:
-	mysql> CREATE FUNCTION lib_mysqludf_str_info RETURNS STRING SONAME "lib_mysqludf_str.so";
-
-	Add the str_numtowords function to MySQL with:
-	mysql> CREATE FUNCTION str_numtowords RETURNS STRING SONAME "lib_mysqludf_str.so";
-
-	Add the str_rot13 function to MySQL with:
-	mysql> CREATE FUNCTION str_rot13 RETURNS STRING SONAME "lib_mysqludf_str.so";
-
-	Add the str_shuffle function to MySQL with:
-	mysql> CREATE FUNCTION str_shuffle RETURNS STRING SONAME "lib_mysqludf_str.so";
-
-	Add the str_translate function to MySQL with:
-	mysql> CREATE FUNCTION str_translate RETURNS STRING SONAME "lib_mysqludf_str.so";
-
-	Add the str_ucfirst function to MySQL with:
-	mysql> CREATE FUNCTION str_ucfirst RETURNS STRING SONAME "lib_mysqludf_str.so";
-
-	Add the str_ucwords function to MySQL with:
-	mysql> CREATE FUNCTION str_ucwords RETURNS STRING SONAME "lib_mysqludf_str.so";
+	Install the UDFs by sourcing installdb.sql.
 */
 
 #if defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(WIN32)
