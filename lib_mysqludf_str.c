@@ -149,6 +149,14 @@ char *str_rot13(UDF_INIT *initid, UDF_ARGS *args, char *result,
 		unsigned long *res_length, char *null_value, char *error);
 
 DLLEXP
+my_bool str_xor_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+DLLEXP
+void str_xor_deinit(UDF_INIT *initid);
+DLLEXP
+char *str_xor(UDF_INIT *initid, UDF_ARGS *args, char *__restrict result,
+		unsigned long *res_length, char *null_value, char *error);
+
+DLLEXP
 my_bool lib_mysqludf_str_info_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 DLLEXP
 void lib_mysqludf_str_info_deinit(UDF_INIT *initid);
@@ -765,6 +773,89 @@ char *str_ucwords(UDF_INIT *initid, UDF_ARGS *args,
 		}
 	}
 
+	return result;
+}
+
+/******************************************************************************
+** purpose:	called once for each invocation of str_xor();
+**					checks arguments, sets restrictions
+** receives:	pointer to UDF_INIT struct; pointer to UDF_ARGS struct which contains information about
+**					the number, length, and type of args that were passed to str_xor(); pointer to a char
+**					array of size MYSQL_ERRMSG_SIZE in which an error message can be stored if necessary
+** returns:	1 => failure; 0 => success
+******************************************************************************/
+my_bool str_xor_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+{
+	if (args->arg_count != 2 || args->arg_type[0] != STRING_RESULT ||
+			args->arg_type[1] != STRING_RESULT || args->args[0] == NULL ||
+			args->args[1] == NULL)
+	{
+		strncpy(message, "str_xor requires exactly two non-NULL string arguments", MYSQL_ERRMSG_SIZE);
+		return 1;
+	}
+
+	initid->maybe_null = 0;
+	initid->max_length = args->lengths[0] >= args->lengths[1] ? args->lengths[0] : args->lengths[1];
+	return 0;
+}
+
+void str_xor_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
+{
+}
+
+/******************************************************************************
+** purpose:	exclusive OR (XOR) each byte of the two string arguments.
+**					If one string argument is longer than the other, the shorter string
+**					is considered to be padded with enough trailing NUL bytes that the
+**					arguments would have the same length.
+** receives:	pointer to UDF_INIT struct; pointer to UDF_ARGS struct which
+**					contains the two string arguments and their lengths;
+**					pointer to the result buffer; pointer to ulong that stores the result length;
+**					pointer to mem which can be set to 1 if the result is NULL; pointer
+**					to mem which can be set to 1 if the calculation resulted in an
+**					error
+** returns:	the bytewise XOR of the two strings
+******************************************************************************/
+char *str_xor(UDF_INIT *initid, UDF_ARGS *args, char *__restrict result,
+		unsigned long *res_length, char *null_value, char *error)
+{
+	assert(args->arg_count == 2);
+	assert(args->arg_type[0] == STRING_RESULT && args->arg_type[1] == STRING_RESULT);
+	assert(args->args[0] != NULL && args->args[1] != NULL);
+
+	{
+		char *__restrict p = result,
+				*arg0 = args->args[0],
+				*arg1 = args->args[1];
+		const unsigned long arg0_length = args->lengths[0],
+				arg1_length = args->lengths[1];
+		char *const arg0_end = arg0 + arg0_length;
+		char *const arg1_end = arg1 + arg1_length;
+
+		if (arg0_length <= arg1_length)
+		{
+			for (; arg0 != arg0_end; ++arg0, ++arg1)
+				*p++ = (*arg0) ^ (*arg1);
+			//for (; arg1 != arg1_end; ++arg1)
+			//	*p++ = *arg1 /* '\x00' ^ (*arg1) */;
+			memcpy(p, arg1, (arg1_end - arg1));
+
+			*res_length = arg1_length;
+		}
+		else
+		{
+			for (; arg1 != arg1_end; ++arg0, ++arg1)
+				*p++ = (*arg0) ^ (*arg1);
+			//for (; arg0 != arg0_end; ++arg0)
+			//	*p++ = *arg0 /* (*arg0) ^ '\x00' */;
+			memcpy(p, arg0, (arg0_end - arg0));
+
+			*res_length = arg0_length;
+		}
+	}
+
+	*null_value = 0;
+	*error = 0;
 	return result;
 }
 
