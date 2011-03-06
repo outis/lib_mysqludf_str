@@ -36,6 +36,7 @@
 #define DLLEXP
 #endif
 
+#include <my_global.h>
 #ifdef STANDARD
 /* STANDARD is defined, don't use any mysql functions */
 #include <stdio.h>
@@ -49,11 +50,11 @@ typedef unsigned long long ulonglong;
 typedef long long longlong;
 #endif /*__WIN__*/
 #else
-#include <my_global.h>
 #include <my_sys.h>
 #include <m_string.h>
 #endif
 #include <mysql.h>
+#include <m_ctype.h>
 #include <ctype.h>
 
 #include "config.h"
