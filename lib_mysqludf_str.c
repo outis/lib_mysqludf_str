@@ -100,7 +100,7 @@ DLLEXP
 void str_shuffle_deinit(UDF_INIT *initid);
 DLLEXP
 char *str_shuffle(UDF_INIT *initid, UDF_ARGS *args, char *result,
-	    unsigned long *res_length, char *null_value, char *error);
+		unsigned long *res_length, char *null_value, char *error);
 
 DLLEXP
 my_bool str_ucwords_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
@@ -108,7 +108,7 @@ DLLEXP
 void str_ucfirst_deinit(UDF_INIT *initid);
 DLLEXP
 char *str_ucfirst(UDF_INIT *initid, UDF_ARGS *args, char *result,
-	    unsigned long *res_length, char *null_value, char *error);
+		unsigned long *res_length, char *null_value, char *error);
 
 DLLEXP
 my_bool str_ucwords_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
@@ -116,7 +116,7 @@ DLLEXP
 void str_ucwords_deinit(UDF_INIT *initid);
 DLLEXP
 char *str_ucwords(UDF_INIT *initid, UDF_ARGS *args, char *result,
-	    unsigned long *res_length, char *null_value, char *error);
+		unsigned long *res_length, char *null_value, char *error);
 
 DLLEXP
 my_bool str_rot13_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
@@ -124,7 +124,7 @@ DLLEXP
 void str_rot13_deinit(UDF_INIT *initid);
 DLLEXP
 char *str_rot13(UDF_INIT *initid, UDF_ARGS *args, char *result,
-	    unsigned long *res_length, char *null_value, char *error);
+		unsigned long *res_length, char *null_value, char *error);
 
 DLLEXP
 my_bool lib_mysqludf_str_info_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
@@ -132,7 +132,7 @@ DLLEXP
 void lib_mysqludf_str_info_deinit(UDF_INIT *initid);
 DLLEXP
 char *lib_mysqludf_str_info(UDF_INIT *initid, UDF_ARGS *args, char *result,
-	    unsigned long *res_length, char *null_value, char *error);
+		unsigned long *res_length, char *null_value, char *error);
 
 #ifdef	__cplusplus
 }
