@@ -1,3 +1,5 @@
+.deps/
+.libs/
 /_old*
 /_ref
 /autom4te.cache
@@ -10,3 +12,8 @@
 *.suo
 *.vcxproj.user
 /aclocal.m4
+/config.h
+/config.log
+/config.status
+Makefile
+/stamp-h1
