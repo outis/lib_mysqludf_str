@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" type="text/css" href="../mysqludf.css"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>lib_mysqludf_str - A library of MySQL UDFs for working with strings</title>
+</head>
+<body>
+	<div>
+		<a href="../index.html">Top</a>
+	|	<a href="../mysql_udf_repository_libraries.html">Up</a>
+	</div>
+	<h1>lib_mysqludf_str</h1>
+	<div>
+		<a href="lib_mysqludf_str.html">Documentation</a>
+	|	<a href="lib_mysqludf_str.so">Binary</a>
+	|	<a href="lib_mysqludf_str.sql">Installation</a>
+	|	<a href="lib_mysqludf_str.c">Source</a>
+	|	<a href="lib_mysqludf_str_0.1.1.tar.gz">tar.gz</a>
+	</div>
+	<p>
+		MySQL already includes many string functions natively. 
+		However, this function repository is not exhaustive and other string functions can ease the development of MySQL-based applications.
+		Users coming from PHP or Perl background, for instance, may expect to find their entire set of string functions in MySQL.
+		<code>lib_mysqludf_str</code> aims to offer a library of string functions which can complement the native one.
+	</p>
+	<p>
+		The following functions are currently supported in the <code>lib_mysqludf_str</code> library:
+	</p>
+	<ol>
+		<li><a href="#str_numtowords"><code>str_numtowords</code></a> - converts a number to a string.</li>
+		<li><a href="#str_rot13"><code>str_rot13</code></a> - performs the rot13 transform on a string.</li>
+		<li><a href="#str_shuffle"><code>str_shuffle</code></a> - randomly shuffles the characters of a string.</li>
+		<li><a href="#str_translate"><code>str_translate</code></a> - replaces characters contained in srcchar with the corresponding ones in dstchar.</li>
+		<li><a href="#str_ucfirst"><code>str_ucfirst</code></a> - makes uppercase the first character of the string.</li>
+		<li><a href="#str_ucwords"><code>str_ucwords</code></a> - transforms to uppercase the first character of each word in a string.</li>
+	</ol>
+	<p>
+		Use <a href="#lib_mysqludf_str_info"><code>lib_mysqludf_str_info()</code></a> to obtain information about the currently installed version of <code>lib_mysqludf_str</code>.
+	</p>
+	<a name="str_numtowords"></a><h2>str_numtowords</h2>
+	<p>
+		<code>str_numtowords</code> converts numbers written in arabic digits to an english word. Positive and negative numbers up to 9 digits long are supported.
+	</p>
+	<h3>Syntax</h3>
+<pre>str_numtowords(<b>num</b>)</pre>
+	<h3>Parameters and Return Values</h3>
+	<dl>
+		<dt><code>num</code></dt>
+		<dd>
+			The integer number to be converted to string.
+			If <code>num</code> is not an integer type or it is NULL, an error will be returned. 
+		</dd>
+		<dt>returns</dt>
+		<dd>
+			The string spelling the given number in English.
+		</dd>
+	</dl>
+	<h3>Examples</h3>
+	<p>
+		Converting 123456 to string:
+	</p>
+	<pre>
+SELECT str_numtowords(123456) as price;
+	</pre>
+	<p>yields this result:</p>
+	<pre>
++----------------------------------------------------------+
+| price                                                    |
++----------------------------------------------------------+
+| one hundred twenty-three thousand four hundred fifty-six | 
++----------------------------------------------------------+
+	</pre>	
+	<a name="str_rot13"></a><h2>str_rot13</h2>
+	<p>
+		<code>str_rot13</code> performs the rot13 transform on a string, shifting each character	by 13 places in the alphabet, and wrapping back to the beginning if necessary. Non-alphabetic character will not be modified.
+	</p>
+	<h3>Syntax</h3>
+<pre>str_rot13(<b>subject</b>)</pre>
+	<h3>Parameters and Return Values</h3>
+	<dl>
+		<dt><code>subject</code></dt>
+		<dd>
+			The string to be transformed. 
+			If <code>subject</code> is not a string type or it is NULL, an error will be returned. 
+		</dd>
+		<dt>returns</dt>
+		<dd>
+			The original string with each character shifted by 13 places in the alphabet.
+		</dd>
+	</dl>
+	<h3>Examples</h3>
+	<p>
+		Crypting a string using str_rot13:
+	</p>
+	<pre>
+SELECT str_rot13('secret message') as crypted;
+	</pre>
+	<p>yields this result:</p>
+	<pre>
++----------------+
+| crypted        |
++----------------+
+| frperg zrffntr | 
++----------------+
+	</pre>	
+	<p>
+		Decrypting a rot13-encoded string (applying again the same function):
+	</p>
+	<pre>
+SELECT str_rot13('frperg zrffntr') as decrypted;
+	</pre>
+		<p>yields this result:</p>
+	<pre>
++----------------+
+| decrypted      |
++----------------+
+| secret message | 
++----------------+
+	</pre>
+	<a name="str_shuffle"></a><h2>str_shuffle</h2>
+	<p>
+		The <code>str_shuffle</code> function takes a string and randomly shuffles its characters, returning one of its possible permutations.
+	</p>
+	<h3>Syntax</h3>
+<pre>str_shuffle(<b>subject</b>)</pre>
+	<h3>Parameters and Return Values</h3>
+	<dl>
+		<dt><code>subject</code></dt>
+		<dd>
+			A <code>string</code> value to be shuffled.
+			If <code>str</code> is not a string type or it is NULL, an error will be returned. 
+		</dd>
+		<dt>returns</dt>
+		<dd>
+			A <code>string</code> value representing one of the possible permutations of the characters composing <code>subject</code>.
+		</dd>
+	</dl>
+	<h3>Examples</h3>
+	<p>
+		Shuffling a string:
+	</p>
+	<pre>
+SELECT str_shuffle('shake me!') as nonsense;
+	</pre>
+	<p>yields a result like this:</p>
+	<pre>
++-----------+
+| nonsense  |
++-----------+
+| esm a!khe | 
++-----------+
+	</pre>
+	<a name="str_translate"></a><h2>str_translate</h2>
+	<p>
+		The <code>str_translate</code> function scans each character in <code>subject</code> string and replaces every occurrence of a character that is contained in <code>srcchar</code> with the corresponding char in <code>dstchar</code>.
+	</p>
+	<h3>Syntax</h3>
+<pre>str_translate(<b>subject</b>,<b>srcchar</b>, <b>dstchar</b>)</pre>
+	<h3>Parameters and Return Values</h3>
+	<dl>
+		<dt><code>subject</code></dt>
+		<dd>
+			A <code>string</code> value whose characters have to be transformed.
+			If <code>subject</code> is not a string type or it is NULL, an error will be returned. 
+		</dd>
+		<dt><code>srcchar</code></dt>
+		<dd>
+			A <code>string</code> value containing the characters to be searched and replaced, if present.
+			If <code>srcchar</code> is not a string type or it is NULL, an error will be returned. 
+			<code>srcchar</code> must contain the same number of characters of <code>dstchar</code>.
+		</dd>
+		<dt><code>dstchar</code></dt>
+		<dd>
+			A <code>string</code> value containing the characters which will replace the corresponding ones in srcchar.
+			If <code>dstchar</code> is not a string type or it is NULL, an error will be returned. 
+			<code>dstchar</code> must contain the same number of characters of <code>srcchar</code>.
+		</dd>
+		<dt>returns</dt>
+		<dd>
+			A <code>string</code> value that is a copy of <code>subject</code> but in which each character present in <code>srcchar</code> is replaced with the corresponding one in <code>dstchar</code>.
+		</dd>
+	</dl>
+	<h3>Examples</h3>
+	<p>
+		Replacing 'a' with 'x' and 'b' with 'y':
+	</p>
+	<pre>
+SELECT str_translate('a big string', 'ab', 'xy');
+	</pre>
+	<p>yields this result:</p>
+	<pre>
++--------------+
+| translated   |
++--------------+
+| x yig string | 
++--------------+
+	</pre>
+	<a name="str_ucfirst"></a><h2>str_ucfirst</h2>
+	<p>
+		The <code>str_ucfirst</code> function is the MySQL equivalent for PHP's <code>ucfirst()</code>.
+		It takes a string and transforms its first characters into uppercase.
+	</p>
+	<h3>Syntax</h3>
+<pre>str_ucfirst(<b>subject</b>)</pre>
+	<h3>Parameters and Return Values</h3>
+	<dl>
+		<dt><code>subject</code></dt>
+		<dd>
+			A <code>string</code> value whose first character will be transformed into uppercase.
+			If <code>subject</code> is not a string type or it is NULL, an error will be returned. 
+		</dd>
+		<dt>returns</dt>
+		<dd>
+			A <code>string</code> value with the first character of <code>subject</code> capitalized, if that character is alphabetic.
+		</dd>
+	</dl>
+	<h3>Examples</h3>
+	<p>
+		Capitalizing a string:
+	</p>
+	<pre>
+SELECT str_ucfirst('sample string') as capitalized;
+	</pre>
+	<p>yields this result:</p>
+	<pre>
++---------------+
+| capitalized   |
++---------------+
+| Sample string | 
++---------------+
+	</pre>
+	<h3>See Also</h3>
+	<ul>
+		<li><a href="#str_ucwords"><code>str_ucwords</code></a></li>
+	</ul>
+	<a name="str_ucwords"></a><h2>str_ucwords</h2>
+	<p>
+		The <code>str_ucwords</code> function is the MySQL equivalent for PHP's <code>ucwords()</code>.
+		It takes a string and transforms the first character of each of its word into uppercase.
+	</p>
+	<h3>Syntax</h3>
+<pre>str_ucwords(<b>subject</b>)</pre>
+	<h3>Parameters and Return Values</h3>
+	<dl>
+		<dt><code>subject</code></dt>
+		<dd>
+			A <code>string</code> value where the	first character of each string will be transformed into uppercase.
+			If <code>subject</code> is not a string type or it is NULL, an error will be returned. 
+		</dd>
+		<dt>returns</dt>
+		<dd>
+			A <code>string</code> value with the first character of each word in <code>subject</code> capitalized, if that character is alphabetic.
+		</dd>
+	</dl>
+	<h3>Examples</h3>
+	<p>
+		Capitalizing the first character of each word in a string:
+	</p>
+	<pre>
+SELECT str_ucwords('a string composed of many words') as capitalized;
+	</pre>
+	<p>yields this result:</p>
+	<pre>
++---------------------------------+
+| capitalized                     |
++---------------------------------+
+| A String Composed Of Many Words | 
++---------------------------------+
+	</pre>
+	<h3>See Also</h3>
+	<ul>
+		<li><a href="#str_ucfirst"><code>str_ucfirst</code></a></li>
+	</ul>
+</body>
+</html>

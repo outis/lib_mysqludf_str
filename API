@@ -1,0 +1,20 @@
+lib_mysqludf_str_info()
+	Outputs the library version.
+
+str_numtowords(num)
+    Converts numbers written in arabic digits to an english word.
+
+str_rot13(subject)
+    Performs the rot13 transform on a string, shifting each character by 13 places in the alphabet, and wrapping back to the beginning if necessary.
+    
+str_shuffle(subject)
+    Returns one of the possible permutations of subject string, randomly shuffling its characters, 
+
+str_translate(subject,srcchar, dstchar)
+    Scans each character in subject string and replaces every occurrence of a character that is contained in srcchar with the corresponding char in dstchar.
+
+str_ucfirst(subject)
+    Takes a string and transforms its first characters into uppercase.
+
+str_ucwords(subject)
+    Takes a string and transforms the first character of each of its word into uppercase.

@@ -1,0 +1,21 @@
+Version 0.1.2 (2007-10-30)
+	- use autotools for build proces
+
+Version 0.1.1 (2007-10-21)
+	- added the DLLEXP macro and code that should allow it to compile on Windows.
+	- fixed names, changed lib_mysqludf_string to lib_mysqludf_str 
+
+Version 0.1.0 (2007-10-20)
+	- added str_numtowords function
+	- first version of the documentation
+	- added Makefile and SQL file to the package
+	- library included in the MySQL UDF Repository
+
+Version 0.0.2 (2007-10-12)
+	- added str_shuffle function
+	- added ucfirst function
+	- added ucwords function
+	- added rot13 function
+	
+Version 0.0.1 (2007-10-10)
+	- first release with str_translate function
