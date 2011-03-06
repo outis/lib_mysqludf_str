@@ -1,4 +1,4 @@
-/* -*- coding: utf-8; tab-width: 4; indent-tabs-mode: t -*- */
+/* -*- coding: utf-8; tab-width: 2; indent-tabs-mode: t -*- */
 /*
 	lib_mysqludf_str - a library of functions to work with strings
 	Copyright © 2011  Daniel Trebbien <dtrebbien@gmail.com>
