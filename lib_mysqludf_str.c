@@ -74,6 +74,8 @@ typedef long long longlong;
 #include <mysql.h>
 #include <ctype.h>
 
+#include "config.h"
+
 #ifdef __GNUC__
 /* From Check:  http://check.svn.sourceforge.net/viewvc/check/trunk/src/check.h.in?revision=HEAD
    License: LGPL 2.1 or later */
@@ -96,7 +98,7 @@ typedef long long longlong;
 
 #ifdef HAVE_DLOPEN
 
-#define LIBVERSION "lib_mysqludf_str version 0.1.1"
+#define LIBVERSION ("lib_mysqludf_str version " PACKAGE_VERSION)
 #define ROT_OFFSET 13
 
 /******************************************************************************
