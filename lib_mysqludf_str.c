@@ -38,6 +38,7 @@
 
 #ifdef STANDARD
 /* STANDARD is defined, don't use any mysql functions */
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #ifdef __WIN__
