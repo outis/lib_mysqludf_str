@@ -8,10 +8,10 @@ drop function if exists str_translate;
 drop function if exists str_ucfirst;
 drop function if exists str_ucwords;
 
-create function lib_mysqludf_str_info returns string soname 'lib_mysqludf_str.so';
-create function str_numtowords returns string soname 'lib_mysqludf_str.so';
-create function str_rot13 returns string soname 'lib_mysqludf_str.so';
-create function str_shuffle returns string soname 'lib_mysqludf_str.so';
-create function str_translate returns string soname 'lib_mysqludf_str.so';
-create function str_ucfirst returns string soname 'lib_mysqludf_str.so';
-create function str_ucwords returns string soname 'lib_mysqludf_str.so';
+create function lib_mysqludf_str_info returns string soname 'lib_mysqludf_str';
+create function str_numtowords returns string soname 'lib_mysqludf_str';
+create function str_rot13 returns string soname 'lib_mysqludf_str';
+create function str_shuffle returns string soname 'lib_mysqludf_str';
+create function str_translate returns string soname 'lib_mysqludf_str';
+create function str_ucfirst returns string soname 'lib_mysqludf_str';
+create function str_ucwords returns string soname 'lib_mysqludf_str';
