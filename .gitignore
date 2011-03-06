@@ -1,0 +1,12 @@
+/_old*
+/_ref
+/autom4te.cache
+/Debug
+/ipch
+/Release
+/x64
+*.opensdf
+*.sdf
+*.suo
+*.vcxproj.user
+/aclocal.m4
