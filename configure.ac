@@ -5,7 +5,7 @@ AC_PREREQ(2.59)
 # These can later be referenced in the code as PACKAGE_VERSION,... and
 # in the Makefile.am as VERSION
 #
-AC_INIT(lib_mysqludf_str,0.1.1,claudiocherubino@gmail.com)
+AC_INIT(lib_mysqludf_str, 0.2, dtrebbien@gmail.com)
 
 AC_CONFIG_AUX_DIR(config)
 
