@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 ### Library to create.  This is used by libtool and turns into a .so or .dll
 ### during the "make install"
 ###
