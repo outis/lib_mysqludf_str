@@ -295,6 +295,9 @@ char *str_numtowords(UDF_INIT *initid, UDF_ARGS *args,
 	// value will contain the user-supplied argument, cast as integer
 	int value = *((long long*) args->args[0]);
 
+	int part_stack[4];
+	int *part_ptr = part_stack;
+
 	// check for negative values or zero
 	if (value < 0)
 	{
@@ -307,9 +310,6 @@ char *str_numtowords(UDF_INIT *initid, UDF_ARGS *args,
 		*res_length = strlen(result);
 		return result;
 	}
-
-	int part_stack[4];
-	int *part_ptr = part_stack;
 
 	// splitting the number into four parts
 	for (; value; value /= 1000)
