@@ -14,16 +14,14 @@
 	<h1>lib_mysqludf_str</h1>
 	<div>
 		<a href="lib_mysqludf_str.html">Documentation</a>
-	|	<a href="lib_mysqludf_str.so">Binary</a>
-	|	<a href="lib_mysqludf_str.sql">Installation</a>
+	|	<a href="installdb.sql">Installation</a>
 	|	<a href="lib_mysqludf_str.c">Source</a>
-	|	<a href="lib_mysqludf_str_0.1.1.tar.gz">tar.gz</a>
 	</div>
 	<p>
-		MySQL already includes many string functions natively. 
-		However, this function repository is not exhaustive and other string functions can ease the development of MySQL-based applications.
-		Users coming from PHP or Perl background, for instance, may expect to find their entire set of string functions in MySQL.
-		<code>lib_mysqludf_str</code> aims to offer a library of string functions which can complement the native one.
+		MySQL already supports a <a href="http://dev.mysql.com/doc/refman/5.5/en/string-functions.html">number of string functions natively</a>. 
+		However, these string functions are not exhaustive and other string functions can ease the development of MySQL-based applications.
+		Users coming from a PHP or Perl background, for instance, may expect to find their entire set of string functions in MySQL.
+		<code>lib_mysqludf_str</code> aims to offer a library of string functions which complement the native ones.
 	</p>
 	<p>
 		The following functions are currently supported in the <code>lib_mysqludf_str</code> library:
@@ -35,9 +33,10 @@
 		<li><a href="#str_translate"><code>str_translate</code></a> - replaces characters contained in srcchar with the corresponding ones in dstchar.</li>
 		<li><a href="#str_ucfirst"><code>str_ucfirst</code></a> - makes uppercase the first character of the string.</li>
 		<li><a href="#str_ucwords"><code>str_ucwords</code></a> - transforms to uppercase the first character of each word in a string.</li>
+		<li><a href="#str_xor"><code>str_xor</code></a> - performs a byte-wise exclusive OR (XOR) of two strings.</li>
 	</ol>
 	<p>
-		Use <a href="#lib_mysqludf_str_info"><code>lib_mysqludf_str_info()</code></a> to obtain information about the currently installed version of <code>lib_mysqludf_str</code>.
+		Use <a href="#lib_mysqludf_str_info"><code>lib_mysqludf_str_info()</code></a> to obtain information about the currently-installed version of <code>lib_mysqludf_str</code>.
 	</p>
 	<a name="str_numtowords"></a><h2>str_numtowords</h2>
 	<p>
@@ -273,5 +272,83 @@ SELECT str_ucwords('a string composed of many words') as capitalized;
 	<ul>
 		<li><a href="#str_ucfirst"><code>str_ucfirst</code></a></li>
 	</ul>
+	<a name="str_xor"></a><h2>str_xor</h2>
+	<p>
+		The <code>str_xor</code> function performs a byte-wise exclusive OR (XOR) of two strings.
+	</p>
+	<h3>Syntax</h3>
+<pre>str_xor(<b>string1</b>, <b>string2</b>)</pre>
+	<h3>Parameters and Return Values</h3>
+	<dl>
+		<dt><code>string1</code></dt>
+		<dd>
+			The first string. If <code>string1</code> is not a string or is NULL, then an error is returned.
+		</dd>
+		<dt><code>string2</code></dt>
+		<dd>
+			The second string. If <code>string2</code> is not a string or is NULL, then an error is returned.
+		</dd>
+		<dt>returns</dt>
+		<dd>
+			The <code>string</code> value that is obtained by XORing each byte of <code>string1</code> with the corresponding byte of <code>string2</code>.
+		</dd>
+	</dl>
+	<p>
+		Note that if <code>string1</code> or <code>string2</code> is longer than the other, then the shorter
+		string is considered to be padded with enough trailing NUL bytes (0x00) for the two strings to have the
+		same length.
+	</p>
+	<h3>Examples</h3>
+	<pre>
+SELECT HEX(str_xor(UNHEX('0E33'), UNHEX('E0'))) as result;
+	</pre>
+	<p>yields this result:</p>
+	<pre>
++--------+
+| result |
++--------+
+| EE33   |
++--------+
+	</pre>
+	<pre>
+SELECT HEX(str_xor('Wiki', UNHEX('F3F3F3F3'))) as result;
+	</pre>
+	<p>yields this result:</p>
+	<pre>
++----------+
+| result   |
++----------+
+| A49A989A |
++----------+
+	</pre>
+	<h3>See Also</h3>
+	<ul>
+		<li><q><a href="https://secure.wikimedia.org/wikipedia/en/wiki/XOR_cipher">XOR cipher</a></q>. Wikipedia.</li>
+	</ul>
+	<a name="lib_mysqludf_str_info"></a><h2>lib_mysqludf_str_info</h2>
+	<p>
+		The <code>lib_mysqludf_str_info</code> function returns information about the currently-installed version of <code>lib_mysqludf_str</code>.
+	</p>
+	<h3>Syntax</h3>
+<pre>lib_mysqludf_str_info()</pre>
+	<h3>Parameters and Return Values</h3>
+	<dl>
+		<dt>returns</dt>
+		<dd>
+			A <code>string</code> value containing the version of <code>lib_mysqludf_str</code> that is installed.
+		</dd>
+	</dl>
+	<h3>Examples</h3>
+	<pre>
+SELECT lib_mysqludf_str_info() as info;
+	</pre>
+	<p>yields this result:</p>
+	<pre>
++------------------------------+
+| info                         |
++------------------------------+
+| lib_mysqludf_str version 0.2 |
++------------------------------+
+	</pre>
 </body>
 </html>
