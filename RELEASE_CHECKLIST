@@ -65,7 +65,7 @@ ON LINUX
   * Commit any changes in the working tree. Push all commits to GitHub.
 
   * Create a signed tag named "v$(PACKAGE_VERSION)":
-    gpg -s v$(PACKAGE_VERSION)
+    git tag -s v$(PACKAGE_VERSION)
 
     Message: "Version $(PACKAGE_VERSION)"
 
