@@ -101,7 +101,7 @@ char *str_shuffle(UDF_INIT *initid, UDF_ARGS *args, char *result,
 		unsigned long *res_length, char *null_value, char *error);
 
 DLLEXP
-my_bool str_ucwords_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+my_bool str_ucfirst_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 DLLEXP
 void str_ucfirst_deinit(UDF_INIT *initid);
 DLLEXP
