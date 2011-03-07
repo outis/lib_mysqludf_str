@@ -1,3 +1,6 @@
+Version 0.2 (2011-03-07)
+	- added str_xor function
+
 Version 0.1.2 (2007-10-30)
 	- use autotools for build proces
 
