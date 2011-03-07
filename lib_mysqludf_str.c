@@ -172,17 +172,16 @@ char *lib_mysqludf_str_info(UDF_INIT *initid, UDF_ARGS *args, char *result,
 ******************************************************************************/
 my_bool lib_mysqludf_str_info_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
-	my_bool status;
 	if (args->arg_count != 0)
 	{
-		strcpy(message,	"No arguments allowed (udf: lib_mysqludf_str_info)");
-		status = 1;
+		strncpy(message, "No arguments allowed (udf: lib_mysqludf_str_info)", MYSQL_ERRMSG_SIZE);
+		return 1;
 	}
-	else
-	{
-		status = 0;
-	}
-	return status;
+
+	initid->maybe_null = 0;
+	initid->max_length = (sizeof LIBVERSION) - 1;
+	initid->const_item = 1;
+	return 0;
 }
 
 /******************************************************************************
@@ -213,8 +212,8 @@ char *lib_mysqludf_str_info(UDF_INIT *initid, UDF_ARGS *args,
 			char *result, unsigned long *res_length,
 			char *null_value, char *error)
 {
-	strcpy(result,LIBVERSION);
-	*res_length = strlen(LIBVERSION);
+	strcpy(result, LIBVERSION);
+	*res_length = (sizeof LIBVERSION) - 1;
 	return result;
 }
 
