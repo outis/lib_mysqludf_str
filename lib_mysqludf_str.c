@@ -125,6 +125,14 @@ char *str_rot13(UDF_INIT *initid, UDF_ARGS *args, char *result,
 		unsigned long *res_length, char *null_value, char *error);
 
 DLLEXP
+my_bool str_numtowords_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+DLLEXP
+void str_numtowords_deinit(UDF_INIT *initid);
+DLLEXP
+char *str_numtowords(UDF_INIT *initid, UDF_ARGS *args, char *result,
+		unsigned long *res_length, char *null_value, char *error);
+
+DLLEXP
 my_bool str_xor_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 DLLEXP
 void str_xor_deinit(UDF_INIT *initid);
