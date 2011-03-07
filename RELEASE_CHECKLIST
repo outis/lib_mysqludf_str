@@ -1,0 +1,72 @@
+This is a checklist of the steps to follow when preparing a new release.
+
+  * git fetch origin
+    git merge origin/master
+
+  * Update ChangeLog.
+
+  * Update lib_mysqludf_str.html.
+
+  * Update the package version that is passed to AC_INIT in configure.ac.
+
+  * Update the macro def of PACKAGE_VERSION in config.h (for Windows/Visual Studio
+    users).
+
+  * Make sure that there are no uncommitted changes in the working tree. Push
+    all commits to GitHub.
+
+  * Update RELEASE_CHECKLIST if necessary.
+
+
+ON WINDOWS
+================================================================================
+  * Update MySQL to the latest GA release.
+
+  * Build Debug and Release binaries using the Visual Studio solution.
+
+  * Use Dependency Walker to inspect the DLL dependencies of the Release binary.
+    Make sure that there are no unusual dependencies.
+
+  * Install the newly-built DLL to the MySQL plugin directory.
+
+  * Source uninstalldb.sql, then installdb.sql, to make sure that there are no
+    obvious problems.
+
+  * Make sure that the new version is listed in the result of:
+    SELECT lib_mysqludf_str_info() FROM DUAL;
+
+  * Commit any changes in the working tree. Push all commits to GitHub.
+
+  * Prepare a ZIP of the Release build. The ZIP should contain a copy of
+    COPYING, installdb.sql, lib_mysqludf_str.dll, README.win_build, and
+    uninstalldb.sql. The name should be "lib_mysqludf_str-$(PACKAGE_VERSION)_MySQL-$(MYSQL_VERSION)_x64".
+
+  * Upload the ZIP to GitHub. The brief description should be
+    "Build of lib_mysqludf_str $(PACKAGE_VERSION) for MySQL $(MYSQL_VERSION) (Win64)"
+
+  * Sign the ZIP with GPG.
+
+
+ON LINUX
+================================================================================
+  * git fetch origin
+    git merge origin/master
+
+  * make clean
+    autoreconf
+    ./configure --prefix /usr/local/stow/lib_mysqludf_str-HEAD --disable-static
+    make
+    sudo make install
+
+  * Examine the files in /usr/local/stow/lib_mysqludf_str-HEAD
+
+  * ldd /usr/local/stow/lib_mysqludf_str-HEAD/lib/lib_mysqludf_str.so
+
+  * Commit any changes in the working tree. Push all commits to GitHub.
+
+  * Create a signed tag named "v$(PACKAGE_VERSION)":
+    gpg -s v$(PACKAGE_VERSION)
+
+    Message: "Version $(PACKAGE_VERSION)"
+
+  * git push --tags origin
