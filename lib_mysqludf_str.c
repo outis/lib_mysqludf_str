@@ -84,69 +84,21 @@
 extern "C" {
 #endif
 
-DLLEXP
-my_bool str_translate_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
-DLLEXP
-void str_translate_deinit(UDF_INIT *initid);
-DLLEXP
-char *str_translate(UDF_INIT *initid, UDF_ARGS *args, char *result,
-		unsigned long *res_length, char *null_value, char *error);
+#define DECLARE_UDF_INIT_DEINIT(name_id) \
+	DLLEXP my_bool name_id ## _init(UDF_INIT *, UDF_ARGS *, char *); \
+	DLLEXP void name_id ## _deinit(UDF_INIT *);
+#define DECLARE_STRING_UDF(name_id) \
+	DECLARE_UDF_INIT_DEINIT(name_id) \
+	DLLEXP char *name_id(UDF_INIT *, UDF_ARGS *, char *, unsigned long *, char *, char *);
 
-DLLEXP
-my_bool str_shuffle_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
-DLLEXP
-void str_shuffle_deinit(UDF_INIT *initid);
-DLLEXP
-char *str_shuffle(UDF_INIT *initid, UDF_ARGS *args, char *result,
-		unsigned long *res_length, char *null_value, char *error);
-
-DLLEXP
-my_bool str_ucfirst_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
-DLLEXP
-void str_ucfirst_deinit(UDF_INIT *initid);
-DLLEXP
-char *str_ucfirst(UDF_INIT *initid, UDF_ARGS *args, char *result,
-		unsigned long *res_length, char *null_value, char *error);
-
-DLLEXP
-my_bool str_ucwords_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
-DLLEXP
-void str_ucwords_deinit(UDF_INIT *initid);
-DLLEXP
-char *str_ucwords(UDF_INIT *initid, UDF_ARGS *args, char *result,
-		unsigned long *res_length, char *null_value, char *error);
-
-DLLEXP
-my_bool str_rot13_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
-DLLEXP
-void str_rot13_deinit(UDF_INIT *initid);
-DLLEXP
-char *str_rot13(UDF_INIT *initid, UDF_ARGS *args, char *result,
-		unsigned long *res_length, char *null_value, char *error);
-
-DLLEXP
-my_bool str_numtowords_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
-DLLEXP
-void str_numtowords_deinit(UDF_INIT *initid);
-DLLEXP
-char *str_numtowords(UDF_INIT *initid, UDF_ARGS *args, char *result,
-		unsigned long *res_length, char *null_value, char *error);
-
-DLLEXP
-my_bool str_xor_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
-DLLEXP
-void str_xor_deinit(UDF_INIT *initid);
-DLLEXP
-char *str_xor(UDF_INIT *initid, UDF_ARGS *args, char *__restrict result,
-		unsigned long *res_length, char *null_value, char *error);
-
-DLLEXP
-my_bool lib_mysqludf_str_info_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
-DLLEXP
-void lib_mysqludf_str_info_deinit(UDF_INIT *initid);
-DLLEXP
-char *lib_mysqludf_str_info(UDF_INIT *initid, UDF_ARGS *args, char *result,
-		unsigned long *res_length, char *null_value, char *error);
+DECLARE_STRING_UDF(lib_mysqludf_str_info)
+DECLARE_STRING_UDF(str_numtowords)
+DECLARE_STRING_UDF(str_rot13)
+DECLARE_STRING_UDF(str_shuffle)
+DECLARE_STRING_UDF(str_translate)
+DECLARE_STRING_UDF(str_ucfirst)
+DECLARE_STRING_UDF(str_ucwords)
+DECLARE_STRING_UDF(str_xor)
 
 #ifdef	__cplusplus
 }
@@ -799,7 +751,7 @@ void str_xor_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
 **					error
 ** returns:	the bytewise XOR of the two strings
 ******************************************************************************/
-char *str_xor(UDF_INIT *initid, UDF_ARGS *args, char *__restrict result,
+char *str_xor(UDF_INIT *initid, UDF_ARGS *args, char *result,
 		unsigned long *res_length, char *null_value, char *error)
 {
 	assert(args->arg_count == 2);
