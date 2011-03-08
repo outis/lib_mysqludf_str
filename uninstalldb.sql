@@ -8,3 +8,4 @@ drop function if exists str_translate;
 drop function if exists str_ucfirst;
 drop function if exists str_ucwords;
 drop function if exists str_xor;
+drop function if exists str_srand;

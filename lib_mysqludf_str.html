@@ -34,6 +34,7 @@
 		<li><a href="#str_ucfirst"><code>str_ucfirst</code></a> - makes uppercase the first character of the string.</li>
 		<li><a href="#str_ucwords"><code>str_ucwords</code></a> - transforms to uppercase the first character of each word in a string.</li>
 		<li><a href="#str_xor"><code>str_xor</code></a> - performs a byte-wise exclusive OR (XOR) of two strings.</li>
+		<li><a href="#str_srand"><code>str_srand</code></a> - generates a string of cryptographically secure pseudo-random bytes.</li>
 	</ol>
 	<p>
 		Use <a href="#lib_mysqludf_str_info"><code>lib_mysqludf_str_info()</code></a> to obtain information about the currently-installed version of <code>lib_mysqludf_str</code>.
@@ -324,6 +325,40 @@ SELECT HEX(str_xor('Wiki', UNHEX('F3F3F3F3'))) as result;
 	<h3>See Also</h3>
 	<ul>
 		<li><q><a href="https://secure.wikimedia.org/wikipedia/en/wiki/XOR_cipher">XOR cipher</a></q>. Wikipedia.</li>
+	</ul>
+	<a name="str_srand"></a><h2>str_srand</h2>
+	<p>
+		The <code>str_srand</code> function generates a string of random bytes from a cryptographically secure pseudo random number generator (CSPRNG).
+	</p>
+	<h3>Syntax</h3>
+<pre>str_srand(<b>length</b>)</pre>
+	<h3>Parameters and Return Values</h3>
+	<dl>
+		<dt><code>length</code></dt>
+		<dd>
+			The number of pseudo-random bytes to generate, and the length of the string. If <code>length</code> is not a non-negative integer or is NULL, then an error is returned.
+		</dd>
+		<dt>returns</dt>
+		<dd>
+			A <code>string</code> value comprised of <code>length</code> cryptographically secure pseudo-random bytes.
+		</dd>
+	</dl>
+	<h3>Examples</h3>
+	<pre>
+SELECT str_srand(5) as result;
+	</pre>
+	<p>yields a random string containing 5 bytes.</p>
+<pre>
+mysql> SELECT LENGTH(str_srand(5)) as len;
++-----+
+| len |
++-----+
+|   5 |
++-----+
+</pre>
+	<h3>See Also</h3>
+	<ul>
+		<li><q><a href="https://secure.wikimedia.org/wikipedia/en/wiki/CSPRNG">CSPRNG</a></q>. Wikipedia.</li>
 	</ul>
 	<a name="lib_mysqludf_str_info"></a><h2>lib_mysqludf_str_info</h2>
 	<p>

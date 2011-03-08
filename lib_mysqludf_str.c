@@ -50,6 +50,16 @@
 #include <m_ctype.h>
 #include <ctype.h>
 
+#include <limits.h>
+
+#ifdef __WIN__
+#include <ntsecapi.h>
+#else
+#include <fcntl.h>
+#include <malloc.h>
+#include <unistd.h>
+#endif
+
 #include "config.h"
 
 #ifdef __GNUC__
@@ -99,6 +109,7 @@ DECLARE_STRING_UDF(str_translate)
 DECLARE_STRING_UDF(str_ucfirst)
 DECLARE_STRING_UDF(str_ucwords)
 DECLARE_STRING_UDF(str_xor)
+DECLARE_STRING_UDF(str_srand)
 
 #ifdef	__cplusplus
 }
@@ -791,6 +802,101 @@ char *str_xor(UDF_INIT *initid, UDF_ARGS *args, char *result,
 
 	*null_value = 0;
 	*error = 0;
+	return result;
+}
+
+my_bool str_srand_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+{
+	long long *arg0;
+
+	if (args->arg_count != 1 || args->arg_type[0] != INT_RESULT ||
+			(arg0 = (long long *) args->args[0]) == NULL || *arg0 < 0)
+	{
+		strncpy(message, "str_srand requires exactly one non-NULL, non-negative integer argument", MYSQL_ERRMSG_SIZE);
+		return 1;
+	}
+	else if (ULONG_MAX < *arg0)
+	{
+		snprintf(message, MYSQL_ERRMSG_SIZE, "the number of requested cryptographically secure pseudo-random bytes (%lld) cannot be greater than ULONG_MAX (%lu)", *arg0, (unsigned long) ULONG_MAX);
+		return 1;
+	}
+
+#ifndef __WIN__
+	{
+		int fd;
+		int *p;
+
+		fd = open("/dev/random", O_RDONLY);
+		if (fd == -1)
+		{
+			snprintf(message, MYSQL_ERRMSG_SIZE, "failed to open /dev/random for reading: %s", strerror(errno));
+			return 1;
+		}
+
+		p = (int *) malloc(sizeof int);
+		if (p == NULL)
+		{
+			close(fd);
+			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %d bytes of memory", (int) (sizeof int));
+			return 1;
+		}
+		*p = fd;
+		initid->ptr = (char *) p;
+	}
+#endif
+
+	initid->maybe_null = 0;
+	initid->max_length = (unsigned long) *arg0; /* This is a safe cast because 0 ≤ *arg0 ≤ ULONG_MAX */
+	return 0;
+}
+
+void str_srand_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
+{
+#ifndef __WIN__
+	int fd;
+	int *p = (int *) initid->ptr;
+
+	fd = *p;
+	close(fd);
+
+	free(p);
+#endif
+}
+
+char *str_srand(UDF_INIT *initid, UDF_ARGS *args, char *result,
+		unsigned long *res_length, char *null_value, char *error)
+{
+	long long *arg0;
+
+	assert(args->arg_count == 1 && args->arg_type[0] == INT_RESULT);
+	arg0 = (long long *) args->args[0];
+	assert(arg0 != NULL && 0 <= *arg0 && *arg0 <= ULONG_MAX);
+
+	*error = 1;
+
+#ifdef __WIN__
+	if (TRUE == RtlGenRandom(result, (unsigned long) *arg0))
+	{
+		*error = 0;
+	}
+#else
+	{
+		int fd;
+		int *p = (int *) initid->ptr;
+		ssize_t ss;
+
+		fd = *p;
+
+		ss = read(fd, result, (unsigned long) *arg0);
+		if (ss != -1 && ss >= *arg0)
+		{
+			*error = 0;
+		}
+	}
+#endif
+
+	*res_length = (unsigned long) *arg0; /* This is a safe cast because 0 ≤ *arg0 ≤ ULONG_MAX */
+	*null_value = 0;
 	return result;
 }
 
