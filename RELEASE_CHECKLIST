@@ -20,11 +20,14 @@ This is a checklist of the steps to follow when preparing a new release.
 
 ON WINDOWS
 ================================================================================
+This assumes that Windows is 64-bit.
+
   * Update MySQL to the latest GA release.
 
-  * Build Debug and Release binaries using the Visual Studio solution.
+  * Build Debug and Release binaries (Win32 and x64 platforms) using the
+    Visual Studio solution.
 
-  * Use Dependency Walker to inspect the DLL dependencies of the Release binary.
+  * Use Dependency Walker to inspect the DLL dependencies of the Release/x64 binary.
     Make sure that there are no unusual dependencies.
 
   * Install the newly-built DLL to the MySQL plugin directory.
@@ -37,14 +40,19 @@ ON WINDOWS
 
   * Commit any changes in the working tree. Push all commits to GitHub.
 
-  * Prepare a ZIP of the Release build. The ZIP should contain a copy of
-    COPYING, installdb.sql, lib_mysqludf_str.dll, README.win_build, and
+  * Prepare a ZIP of the Release/x64 build. The ZIP should contain a copy of
+    COPYING, installdb.sql, lib_mysqludf_str.dll, README.win64_build, and
     uninstalldb.sql. The name should be "lib_mysqludf_str-$(PACKAGE_VERSION)_MySQL-$(MYSQL_VERSION)_x64".
 
-  * Upload the ZIP to GitHub. The brief description should be
-    "Build of lib_mysqludf_str $(PACKAGE_VERSION) for MySQL $(MYSQL_VERSION) (Win64)"
+  * Prepare a ZIP of the Release/Win32 build. The ZIP should contain a copy of
+    COPYING, installdb.sql, lib_mysqludf_str.dll, README.win32_build, and
+    uninstalldb.sql. The name should be "lib_mysqludf_str-$(PACKAGE_VERSION)_MySQL-$(MYSQL_VERSION)_x86".
 
-  * Sign the ZIP with GPG.
+  * Upload the two ZIP archives to GitHub. The brief description should be
+    "Build of lib_mysqludf_str $(PACKAGE_VERSION) for MySQL $(MYSQL_VERSION) (Win64)"
+    and "Build of lib_mysqludf_str $(PACKAGE_VERSION) for MySQL $(MYSQL_VERSION) (Win32)"
+
+  * Sign the two ZIP archives with GPG.
 
 
 ON LINUX
