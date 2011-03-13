@@ -23,6 +23,11 @@ AC_PROG_LIBTOOL
 #
 AC_PROG_CC
 
+AC_ARG_WITH(max_random_bytes,
+		AC_HELP_STRING([--with-max-random-bytes=INT], [Set the maximum number of bytes that can be generated with a single call to str_srand @<:@4096@:>@]),, [with_max_random_bytes=4096])
+
+AC_DEFINE_UNQUOTED(MAX_RANDOM_BYTES, [${with_max_random_bytes}LL], [Define to a long long integer constant that is the maximum number of bytes that can be generated with a single call to str_srand])
+
 # Require the mysql library.  This uses the ax_lib_mysql.m4
 # file to look for the mysql_config program and then run it in order
 # to set up MYSQL_CFLAGS and MYSQL_LDFLAGS
@@ -38,7 +43,7 @@ AX_LIB_MYSQL(,,AC_MSG_ERROR("Can't find mysql library" ))
 #
 AM_CONFIG_HEADER(config.h)
 
-AC_CHECK_LIB(dl,dlopen,AC_DEFINE(HAVE_DLOPEN,1,[Have dlopen()])) 
+AC_CHECK_LIB(dl,dlopen,AC_DEFINE(HAVE_DLOPEN,1,[Have dlopen()]))
 
 AC_C_CONST
 AC_TYPE_SIZE_T
@@ -46,4 +51,3 @@ AC_TYPE_SIZE_T
 # Output from the configure script into Makefile
 #
 AC_OUTPUT(Makefile)
-

@@ -3,7 +3,7 @@
 	lib_mysqludf_str - a library of functions to work with strings
 	Copyright © 2011  Daniel Trebbien <dtrebbien@gmail.com>
 	Copyright © 2007  Claudio Cherubino <claudiocherubino@gmail.com>
-	web: http://www.claudiocherubino.it
+	web: http://www.mysqludf.org/lib_mysqludf_str/
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -18,16 +18,6 @@
 	You should have received a copy of the GNU Lesser General Public
 	License along with this library; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-*/
-
-/******************************************************************************
-** instructions
-******************************************************************************/
-/*
-	Compile with (adapt the include path to your environment):
-	> gcc -Wall -I/usr/include/mysql -shared lib_mysqludf_str.c -olib_mysqludf_str.so
-
-	Install the UDFs by sourcing installdb.sql.
 */
 
 #if defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(WIN32)
@@ -809,6 +799,16 @@ char *str_xor(UDF_INIT *initid, UDF_ARGS *args, char *result,
 	return result;
 }
 
+#ifndef __WIN__
+typedef struct st_str_srand_data {
+	/* Readable file descriptor of /dev/urandom */
+	int fd;
+
+	/* If non-NULL, a buffer where the random bytes are stored */
+	char *buf;
+} st_str_srand_data;
+#endif
+
 my_bool str_srand_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
 	long long *arg0;
@@ -817,6 +817,11 @@ my_bool str_srand_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 			(arg0 = (long long *) args->args[0]) == NULL || *arg0 < 0)
 	{
 		strncpy(message, "str_srand requires exactly one non-NULL, non-negative integer argument", MYSQL_ERRMSG_SIZE);
+		return 1;
+	}
+	else if (MAX_RANDOM_BYTES < *arg0)
+	{
+		snprintf(message, MYSQL_ERRMSG_SIZE, "str_srand is limited to generating at most %lld bytes each execution", (long long) (MAX_RANDOM_BYTES));
 		return 1;
 	}
 	else if (SIZE_MAX < *arg0)
@@ -845,24 +850,39 @@ my_bool str_srand_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	}
 #else
 	{
-		int fd;
-		int *p;
+		st_str_srand_data *p;
 
-		fd = open("/dev/random", O_RDONLY);
-		if (fd == -1)
-		{
-			snprintf(message, MYSQL_ERRMSG_SIZE, "failed to open /dev/random for reading: %s", strerror(errno));
-			return 1;
-		}
-
-		p = (int *) malloc(sizeof int);
+		p = (st_str_srand_data *) malloc(sizeof (st_str_srand_data));
 		if (p == NULL)
 		{
-			close(fd);
-			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %d bytes of memory", (int) (sizeof int));
+			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (sizeof (st_str_srand_data)));
 			return 1;
 		}
-		*p = fd;
+
+		p->buf = NULL;
+
+		if (*arg0 > 255)
+		{
+			char *tmp = (char *) malloc((size_t) *arg0); /* This is a safe cast because *arg0 <= SIZE_MAX. */
+			if (tmp == NULL)
+			{
+				snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) *arg0);
+				free(p);
+				return 1;
+			}
+			p->buf = tmp;
+		}
+
+		p->fd = open("/dev/urandom", O_RDONLY);
+		if (p->fd == -1)
+		{
+			snprintf(message, MYSQL_ERRMSG_SIZE, "failed to open /dev/urandom for reading: %s", strerror(errno));
+			if (p->buf != NULL)
+				free(p->buf);
+			free(p);
+			return 1;
+		}
+
 		initid->ptr = (char *) p;
 	}
 #endif
@@ -880,12 +900,11 @@ void str_srand_deinit(UDF_INIT *initid)
 		free(initid->ptr);
 	}
 #else
-	int fd;
-	int *p = (int *) initid->ptr;
+	st_str_srand_data *p = (st_str_srand_data *) initid->ptr;
 
-	fd = *p;
-	close(fd);
-
+	close(p->fd);
+	if (p->buf != NULL)
+		free(p->buf);
 	free(p);
 #endif
 }
@@ -897,7 +916,7 @@ char *str_srand(UDF_INIT *initid, UDF_ARGS *args, char *result,
 
 	assert(args->arg_count == 1 && args->arg_type[0] == INT_RESULT);
 	arg0 = (long long *) args->args[0];
-	assert(arg0 != NULL && 0 <= *arg0 && *arg0 <= SIZE_MAX && *arg0 <= ULONG_MAX);
+	assert(arg0 != NULL && 0 <= *arg0 && *arg0 <= MAX_RANDOM_BYTES && *arg0 <= SIZE_MAX && *arg0 <= ULONG_MAX);
 
 	*error = 1;
 
@@ -913,14 +932,25 @@ char *str_srand(UDF_INIT *initid, UDF_ARGS *args, char *result,
 	}
 #else
 	{
-		int fd;
-		int *p = (int *) initid->ptr;
-		ssize_t ss;
+		st_str_srand_data *p = (st_str_srand_data *) initid->ptr;
+		ssize_t ss = 0, tmp;
 
-		fd = *p;
+		if (p->buf != NULL)
+		{
+			result = p->buf;
+		}
 
-		ss = read(fd, result, (unsigned long) *arg0);
-		if (ss != -1 && ss >= *arg0)
+		do
+		{
+			tmp = read(p->fd, result + ss, (size_t) (*arg0 - ss));
+
+			if (tmp != -1)
+			{
+				ss += tmp;
+			}
+		} while (tmp > 0 && ss < *arg0);
+
+		if (tmp != -1 && ss >= *arg0)
 		{
 			*error = 0;
 		}

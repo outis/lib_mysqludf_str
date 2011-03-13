@@ -40,6 +40,10 @@
    */
 #undef LT_OBJDIR
 
+/* Define to a long long integer constant that is the maximum number of bytes
+   that can be generated with a single call to str_srand */
+#undef MAX_RANDOM_BYTES
+
 /* Name of package */
 #undef PACKAGE
 
