@@ -726,6 +726,8 @@ char *str_ucwords(UDF_INIT *initid, UDF_ARGS *args,
 ******************************************************************************/
 my_bool str_xor_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+	unsigned long res_length;
+
 	if (args->arg_count != 2 || args->arg_type[0] != STRING_RESULT ||
 			args->arg_type[1] != STRING_RESULT || args->args[0] == NULL ||
 			args->args[1] == NULL)
@@ -734,13 +736,38 @@ my_bool str_xor_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 		return 1;
 	}
 
+	res_length = args->lengths[0];
+	if (args->lengths[1] > res_length)
+		res_length = args->lengths[1];
+
+	if (SIZE_MAX < res_length)
+	{
+		snprintf(message, MYSQL_ERRMSG_SIZE, "res_length (%lu) cannot be greater than SIZE_MAX (%zu)", res_length, (size_t) (SIZE_MAX));
+		return 1;
+	}
+
+	initid->ptr = NULL;
+
+	if (res_length > 255)
+	{
+		char *tmp = (char *) malloc((size_t) res_length); /* This is a safe cast because res_length <= SIZE_MAX. */
+		if (tmp == NULL)
+		{
+			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) res_length);
+			return 1;
+		}
+		initid->ptr = tmp;
+	}
+
 	initid->maybe_null = 0;
-	initid->max_length = args->lengths[0] >= args->lengths[1] ? args->lengths[0] : args->lengths[1];
+	initid->max_length = res_length;
 	return 0;
 }
 
-void str_xor_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
+void str_xor_deinit(UDF_INIT *initid)
 {
+	if (initid->ptr != NULL)
+		free(initid->ptr);
 }
 
 /******************************************************************************
@@ -762,6 +789,11 @@ char *str_xor(UDF_INIT *initid, UDF_ARGS *args, char *result,
 	assert(args->arg_count == 2);
 	assert(args->arg_type[0] == STRING_RESULT && args->arg_type[1] == STRING_RESULT);
 	assert(args->args[0] != NULL && args->args[1] != NULL);
+
+	if (initid->ptr != NULL)
+	{
+		result = initid->ptr;
+	}
 
 	{
 		char *__restrict p = result,
