@@ -338,7 +338,8 @@ SELECT HEX(str_xor('Wiki', UNHEX('F3F3F3F3'))) as result;
 	<dl>
 		<dt><code>length</code></dt>
 		<dd>
-			The number of pseudo-random bytes to generate, and the length of the string. If <code>length</code> is not a non-negative integer or is NULL, then an error is returned.
+			<p>The number of pseudo-random bytes to generate, and the length of the string. If <code>length</code> is not a non-negative integer or is NULL, then an error is returned.</p>
+			<p><b>Note:</b> To prevent Denial of Service, <code>length</code> is limited to the compile-time constant <code>MAX_RANDOM_BYTES</code>. By default, <code>MAX_RANDOM_BYTES</code> is 4096 (4 KiB).</p>
 		</dd>
 		<dt>returns</dt>
 		<dd>
