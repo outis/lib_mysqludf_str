@@ -39,7 +39,7 @@
 	<p>
 		Use <a href="#lib_mysqludf_str_info"><code>lib_mysqludf_str_info()</code></a> to obtain information about the currently-installed version of <code>lib_mysqludf_str</code>.
 	</p>
-	<a name="str_numtowords"></a><h2>str_numtowords</h2>
+	<a name="str_numtowords"></a><h1>str_numtowords</h1>
 	<p>
 		<code>str_numtowords</code> converts numbers written in arabic digits to an english word. Positive and negative numbers up to 9 digits long are supported.
 	</p>
@@ -72,7 +72,7 @@ SELECT str_numtowords(123456) as price;
 | one hundred twenty-three thousand four hundred fifty-six | 
 +----------------------------------------------------------+
 	</pre>	
-	<a name="str_rot13"></a><h2>str_rot13</h2>
+	<a name="str_rot13"></a><h1>str_rot13</h1>
 	<p>
 		<code>str_rot13</code> performs the rot13 transform on a string, shifting each character	by 13 places in the alphabet, and wrapping back to the beginning if necessary. Non-alphabetic character will not be modified.
 	</p>
@@ -119,7 +119,7 @@ SELECT str_rot13('frperg zrffntr') as decrypted;
 | secret message | 
 +----------------+
 	</pre>
-	<a name="str_shuffle"></a><h2>str_shuffle</h2>
+	<a name="str_shuffle"></a><h1>str_shuffle</h1>
 	<p>
 		The <code>str_shuffle</code> function takes a string and randomly shuffles its characters, returning one of its possible permutations.
 	</p>
@@ -152,7 +152,7 @@ SELECT str_shuffle('shake me!') as nonsense;
 | esm a!khe | 
 +-----------+
 	</pre>
-	<a name="str_translate"></a><h2>str_translate</h2>
+	<a name="str_translate"></a><h1>str_translate</h1>
 	<p>
 		The <code>str_translate</code> function scans each character in <code>subject</code> string and replaces every occurrence of a character that is contained in <code>srcchar</code> with the corresponding char in <code>dstchar</code>.
 	</p>
@@ -197,7 +197,7 @@ SELECT str_translate('a big string', 'ab', 'xy');
 | x yig string | 
 +--------------+
 	</pre>
-	<a name="str_ucfirst"></a><h2>str_ucfirst</h2>
+	<a name="str_ucfirst"></a><h1>str_ucfirst</h1>
 	<p>
 		The <code>str_ucfirst</code> function is the MySQL equivalent for PHP's <code>ucfirst()</code>.
 		It takes a string and transforms its first characters into uppercase.
@@ -235,7 +235,7 @@ SELECT str_ucfirst('sample string') as capitalized;
 	<ul>
 		<li><a href="#str_ucwords"><code>str_ucwords</code></a></li>
 	</ul>
-	<a name="str_ucwords"></a><h2>str_ucwords</h2>
+	<a name="str_ucwords"></a><h1>str_ucwords</h1>
 	<p>
 		The <code>str_ucwords</code> function is the MySQL equivalent for PHP's <code>ucwords()</code>.
 		It takes a string and transforms the first character of each of its word into uppercase.
@@ -273,7 +273,7 @@ SELECT str_ucwords('a string composed of many words') as capitalized;
 	<ul>
 		<li><a href="#str_ucfirst"><code>str_ucfirst</code></a></li>
 	</ul>
-	<a name="str_xor"></a><h2>str_xor</h2>
+	<a name="str_xor"></a><h1>str_xor</h1>
 	<p>
 		The <code>str_xor</code> function performs a byte-wise exclusive OR (XOR) of two strings.
 	</p>
@@ -322,11 +322,13 @@ SELECT HEX(str_xor('Wiki', UNHEX('F3F3F3F3'))) as result;
 | A49A989A |
 +----------+
 	</pre>
+	<h3>Since</h3>
+	<p>Version 0.2</p>
 	<h3>See Also</h3>
 	<ul>
 		<li><q><a href="https://secure.wikimedia.org/wikipedia/en/wiki/XOR_cipher">XOR cipher</a></q>. Wikipedia.</li>
 	</ul>
-	<a name="str_srand"></a><h2>str_srand</h2>
+	<a name="str_srand"></a><h1>str_srand</h1>
 	<p>
 		The <code>str_srand</code> function generates a string of random bytes from a cryptographically secure pseudo random number generator (CSPRNG).
 	</p>
@@ -356,11 +358,13 @@ mysql> SELECT LENGTH(str_srand(5)) as len;
 |   5 |
 +-----+
 </pre>
+	<h3>Since</h3>
+	<p>Version ????</p>
 	<h3>See Also</h3>
 	<ul>
 		<li><q><a href="https://secure.wikimedia.org/wikipedia/en/wiki/CSPRNG">CSPRNG</a></q>. Wikipedia.</li>
 	</ul>
-	<a name="lib_mysqludf_str_info"></a><h2>lib_mysqludf_str_info</h2>
+	<a name="lib_mysqludf_str_info"></a><h1>lib_mysqludf_str_info</h1>
 	<p>
 		The <code>lib_mysqludf_str_info</code> function returns information about the currently-installed version of <code>lib_mysqludf_str</code>.
 	</p>
