@@ -40,6 +40,7 @@
 #endif
 
 #include "config.h"
+#include "char_vector.h"
 
 #ifdef __WIN__
 #define DLLEXP __declspec(dllexport)
@@ -186,12 +187,23 @@ char *lib_mysqludf_str_info(UDF_INIT *initid, UDF_ARGS *args,
 ******************************************************************************/
 my_bool str_numtowords_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+	st_char_vector *vec;
+
 	/* make sure user has provided exactly one integer argument */
 	if (args->arg_count != 1 || args->arg_type[0] != INT_RESULT || args->args[0] == NULL)
 	{
 		strcpy(message,"str_numtowords requires one integer argument");
 		return 1;
 	}
+
+	vec = char_vector_alloc();
+	if (vec == NULL)
+	{
+		strncpy(message, "char_vector_alloc() failed", MYSQL_ERRMSG_SIZE);
+		return 1;
+	}
+
+	initid->ptr = (char *) vec;
 
 	/* str_numtowords() will not be returning null */
 	initid->maybe_null=0;
@@ -207,9 +219,14 @@ my_bool str_numtowords_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 **					str_numtowords_init() and str_numtowords())
 ** returns:	nothing
 ******************************************************************************/
-void str_numtowords_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
+void str_numtowords_deinit(UDF_INIT *initid)
 {
+	st_char_vector *vec = (st_char_vector *) initid->ptr;
+	char_vector_free(vec);
 }
+
+#define STR_LENGTH(str) ((sizeof (str)) -1)
+#define STR_COMMA_LENGTH(str_lit) str_lit, STR_LENGTH(str_lit)
 
 /******************************************************************************
 ** purpose:	convert numbers written in arabic digits to an english word.
@@ -226,7 +243,7 @@ char *str_numtowords(UDF_INIT *initid, UDF_ARGS *args,
 			char *result, unsigned long *res_length,
 			char *null_value, char *error)
 {
-	static const char *const powers[] = {"thousand", "million", "billion"};
+	static const char *const powers[] = {"thousand", "million", "billion", "trillion", "quadrillion", "quintillion", "sextillion", "septillion", "octillion", "nonillion", "decillion", "undecillion", "duodecillion"};
 
 	static const char *const ones[] = {"one", "two", "three", "four", "five",
 																"six", "seven", "eight", "nine", "ten",
@@ -235,28 +252,29 @@ char *str_numtowords(UDF_INIT *initid, UDF_ARGS *args,
 
 	static const char *const tens[] = {"twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
 
-	char *cp = result;
+	st_char_vector *vec = (st_char_vector *) initid->ptr;
 
-	// value will contain the user-supplied argument, cast as integer
-	int value = *((long long*) args->args[0]);
+	long long value = *((long long *) args->args[0]);
 
-	int part_stack[4];
+	int part_stack[14];
 	int *part_ptr = part_stack;
+
+	assert(char_vector_length(vec) == 0);
 
 	// check for negative values or zero
 	if (value < 0)
 	{
-		cp += sprintf (cp, "negative ");
+		char_vector_append(vec, STR_COMMA_LENGTH("negative "));
 		value = -value;
 	}
 	else if (value == 0)
 	{
-		strcpy (result, "zero");
-		*res_length = strlen(result);
-		return result;
+		char *tmp = "zero";
+		*res_length = STR_LENGTH("zero");
+		return tmp;
 	}
 
-	// splitting the number into four parts
+	// splitting the number into its parts
 	for (; value; value /= 1000)
 		*part_ptr++ = value % 1000;
 
@@ -266,27 +284,41 @@ char *str_numtowords(UDF_INIT *initid, UDF_ARGS *args,
 
 		if (p >= 100)
 		{
-			cp += sprintf (cp, "%s hundred ", ones[p / 100 - 1]);
+			char_vector_strcat(vec, ones[p / 100 - 1]);
+			char_vector_append(vec, STR_COMMA_LENGTH(" hundred "));
 			p %= 100;
 		}
 
 		if (p >= 20)
 		{
 			if (p % 10)
-				cp += sprintf (cp, "%s-%s ", tens[p / 10 - 2], ones[p % 10 - 1]);
+			{
+				char_vector_strcat(vec, tens[p / 10 - 2]);
+				char_vector_append(vec, STR_COMMA_LENGTH("-"));
+				char_vector_strcat(vec, ones[p % 10 - 1]);
+				char_vector_append(vec, STR_COMMA_LENGTH(" "));
+			}
 			else
-				cp += sprintf (cp, "%s ", tens[p / 10 - 2]);
+			{
+				char_vector_strcat(vec, tens[p / 10 - 2]);
+				char_vector_append(vec, STR_COMMA_LENGTH(" "));
+			}
 		}
 		else if (p > 0)
-			cp += sprintf (cp, "%s ", ones[p - 1]);
+		{
+			char_vector_strcat(vec, ones[p - 1]);
+			char_vector_append(vec, STR_COMMA_LENGTH(" "));
+		}
 
 		if (p && part_ptr > part_stack)
-			cp += sprintf (cp, "%s ", powers[part_ptr - part_stack - 1]);
+		{
+			char_vector_strcat(vec, powers[part_ptr - part_stack - 1]);
+			char_vector_append(vec, STR_COMMA_LENGTH(" "));
+		}
 	}
 
-	cp[-1] = 0;
-	*res_length = strlen(result);
-	return result;
+	*res_length = char_vector_length(vec) - 1;
+	return char_vector_get_ptr(vec);
 }
 
 

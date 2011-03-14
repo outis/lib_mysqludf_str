@@ -129,7 +129,11 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="char_vector.c" />
     <ClCompile Include="lib_mysqludf_str.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="char_vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
