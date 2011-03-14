@@ -665,6 +665,8 @@ char *str_translate(UDF_INIT *initid, UDF_ARGS *args,
 
 my_bool str_ucfirst_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+	unsigned long res_length;
+
 	/* make sure user has provided exactly one string argument */
 	if (args->arg_count != 1 || args->arg_type[0] != STRING_RESULT || args->args[0] == NULL)
 	{
@@ -672,9 +674,29 @@ my_bool str_ucfirst_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 		return 1;
 	}
 
-	/* str_ucfirst() will not be returning null */
-	initid->maybe_null=0;
+	res_length = args->lengths[0];
 
+	if (SIZE_MAX < res_length)
+	{
+		snprintf(message, MYSQL_ERRMSG_SIZE, "res_length (%lu) cannot be greater than SIZE_MAX (%zu)", res_length, (size_t) (SIZE_MAX));
+		return 1;
+	}
+
+	initid->ptr = NULL;
+
+	if (res_length > 255)
+	{
+		char *tmp = (char *) malloc((size_t) res_length); /* This is a safe cast because res_length <= SIZE_MAX. */
+		if (tmp == NULL)
+		{
+			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) res_length);
+			return 1;
+		}
+		initid->ptr = tmp;
+	}
+
+	initid->maybe_null = 0;
+	initid->max_length = res_length;
 	return 0;
 }
 
@@ -688,6 +710,8 @@ my_bool str_ucfirst_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 ******************************************************************************/
 void str_ucfirst_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
 {
+	if (initid->ptr != NULL)
+		free(initid->ptr);
 }
 
 /******************************************************************************
@@ -704,14 +728,21 @@ char *str_ucfirst(UDF_INIT *initid, UDF_ARGS *args,
 			char *result, unsigned long *res_length,
 			char *null_value, char *error)
 {
+	if (initid->ptr != NULL)
+	{
+		result = initid->ptr;
+	}
+
 	// copy the argument string into result
 	strncpy(result, args->args[0], args->lengths[0]);
 
-	*res_length = args->lengths[0];
 
 	// capitalize the first character of the string
 	*result = my_toupper(&my_charset_latin1, *result);
 
+	*res_length = args->lengths[0];
+	*null_value = 0;
+	*error = 0;
 	return result;
 }
 
