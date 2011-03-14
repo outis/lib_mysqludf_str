@@ -20,37 +20,32 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#if defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(WIN32)
-#define DLLEXP __declspec(dllexport)
-#else
-#define DLLEXP
-#endif
-
-#include <my_global.h>
-#ifdef STANDARD
-/* STANDARD is defined, don't use any mysql functions */
+#include <ctype.h>
+#include <limits.h>
+#include <malloc.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#else
-#include <my_sys.h>
-#include <m_string.h>
-#endif
+
+#include <my_global.h>
 #include <mysql.h>
 #include <m_ctype.h>
-#include <ctype.h>
-#include <limits.h>
-#include <stdint.h>
 
 #ifdef __WIN__
 #include <ntsecapi.h>
 #else
 #include <fcntl.h>
-#include <malloc.h>
 #include <unistd.h>
 #endif
 
 #include "config.h"
+
+#ifdef __WIN__
+#define DLLEXP __declspec(dllexport)
+#else
+#define DLLEXP
+#endif
 
 #ifdef __GNUC__
 /* From Check:  http://check.svn.sourceforge.net/viewvc/check/trunk/src/check.h.in?revision=HEAD
