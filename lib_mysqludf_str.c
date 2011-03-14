@@ -734,8 +734,7 @@ char *str_ucfirst(UDF_INIT *initid, UDF_ARGS *args,
 	}
 
 	// copy the argument string into result
-	strncpy(result, args->args[0], args->lengths[0]);
-
+	memcpy(result, args->args[0], args->lengths[0]);
 
 	// capitalize the first character of the string
 	*result = my_toupper(&my_charset_latin1, *result);
