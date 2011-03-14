@@ -763,16 +763,38 @@ char *str_ucfirst(UDF_INIT *initid, UDF_ARGS *args,
 
 my_bool str_ucwords_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+	unsigned long res_length;
+
 	/* make sure user has provided exactly one string argument */
 	if (args->arg_count != 1 || args->arg_type[0] != STRING_RESULT || args->args[0] == NULL)
 	{
-		strcpy(message,"str_ucwords requires one string argument");
+		strncpy(message, "str_ucwords requires one non-NULL string argument", MYSQL_ERRMSG_SIZE);
 		return 1;
 	}
 
-	/* str_ucwords() will not be returning null */
-	initid->maybe_null=0;
+	res_length = args->lengths[0];
 
+	if (SIZE_MAX < res_length)
+	{
+		snprintf(message, MYSQL_ERRMSG_SIZE, "res_length (%lu) cannot be greater than SIZE_MAX (%zu)", res_length, (size_t) (SIZE_MAX));
+		return 1;
+	}
+
+	initid->ptr = NULL;
+
+	if (res_length > 255)
+	{
+		char *tmp = (char *) malloc((size_t) res_length); /* This is a safe cast because res_length <= SIZE_MAX. */
+		if (tmp == NULL)
+		{
+			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) res_length);
+			return 1;
+		}
+		initid->ptr = tmp;
+	}
+
+	initid->maybe_null = 0;
+	initid->max_length = res_length;
 	return 0;
 }
 
@@ -784,8 +806,10 @@ my_bool str_ucwords_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 **					str_ucwords_init() and str_ucwords())
 ** returns:	nothing
 ******************************************************************************/
-void str_ucwords_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
+void str_ucwords_deinit(UDF_INIT *initid)
 {
+	if (initid->ptr != NULL)
+		free(initid->ptr);
 }
 
 /******************************************************************************
@@ -806,6 +830,11 @@ char *str_ucwords(UDF_INIT *initid, UDF_ARGS *args,
 {
 	int i;
 	int new_word = 0;
+
+	if (initid->ptr != NULL)
+	{
+		result = initid->ptr;
+	}
 
 	// copy the argument string into result
 	strncpy(result, args->args[0], args->lengths[0]);
