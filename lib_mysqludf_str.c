@@ -544,7 +544,7 @@ my_bool str_translate_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 		strcpy(message,"str_translate requires three string arguments (subject, srcchar, dstchar)");
 		return 1;
 	}
-	else if (strlen(args->args[1]) != strlen(args->args[2]))
+	else if (args->lengths[1] != args->lengths[2])
 	{
 		strcpy(message,"str_translate(subject, srcchar, dstchar) requires srcchar and dstchar to have the same length");
 		return 1;
@@ -613,6 +613,7 @@ char *str_translate(UDF_INIT *initid, UDF_ARGS *args,
 
 	// src will contain the string to be translated
 	const char *src = args->args[1];
+	unsigned long src_length = args->lengths[1];
 
 	// dst will contain the string to be translated
 	const char *dst = args->args[2];
@@ -630,7 +631,7 @@ char *str_translate(UDF_INIT *initid, UDF_ARGS *args,
 		result[i] = subject[i];
 
 		// for each character of the subject string we check if it is present in src
-		for (j = 0; j < strlen(src); j++)
+		for (j = 0; j < src_length; j++)
 		{
 			if (subject[i] == src[j])
 			{
