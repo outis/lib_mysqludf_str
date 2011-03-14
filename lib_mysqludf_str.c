@@ -625,18 +625,21 @@ char *str_translate(UDF_INIT *initid, UDF_ARGS *args,
 
 	*res_length = args->lengths[0];
 
-	for (i = 0; i < *res_length; i++)
-	{
-		// suppose that the character will not be changed
-		result[i] = subject[i];
+	memcpy(result, subject, *res_length);
 
-		// for each character of the subject string we check if it is present in src
-		for (j = 0; j < src_length; j++)
+	{
+		char *__restrict p = result;
+
+		for (i = 0; i < *res_length; ++i, ++p)
 		{
-			if (subject[i] == src[j])
+			// for each character of the subject string we check if it is present in src
+			for (j = 0; j < src_length; j++)
 			{
-				// replace the character with the corresponding one from dst
-				result[i] = dst[j];
+				if (subject[i] == src[j])
+				{
+					// replace the character with the corresponding one from dst
+					*p = dst[j];
+				}
 			}
 		}
 	}
