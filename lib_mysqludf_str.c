@@ -837,7 +837,7 @@ char *str_ucwords(UDF_INIT *initid, UDF_ARGS *args,
 	}
 
 	// copy the argument string into result
-	strncpy(result, args->args[0], args->lengths[0]);
+	memcpy(result, args->args[0], args->lengths[0]);
 
 	*res_length = args->lengths[0];
 
