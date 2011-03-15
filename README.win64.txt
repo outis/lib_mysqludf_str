@@ -1,4 +1,4 @@
-This is a build of version 0.2 of lib_mysqludf_str for MySQL 5.1+ and 64-bit
+This is a build of version 0.3 of lib_mysqludf_str for MySQL 5.1+ and 64-bit
 Windows XP SP3 or later. It is licensed under the terms of the LGPL
 version 2.1 or later, the exact text of which is located in COPYING.
 
@@ -28,7 +28,7 @@ To install the lib_mysqludf_str UDFs:
     Note: You do NOT need to re-start MySQL after copying lib_mysqludf_str.dll
     into the plugin directory.
 
- 4. As root, source installdb.sql or simply paste the contents into the CLI client.
+ 4. As root, source installdb.win.sql or simply paste the contents into the CLI client.
 
  5. Test the setup by executing:
     SELECT lib_mysqludf_str_info() FROM DUAL;
@@ -37,7 +37,7 @@ To install the lib_mysqludf_str UDFs:
     +------------------------------+
     | lib_mysqludf_str_info()      |
     +------------------------------+
-    | lib_mysqludf_str version 0.2 |
+    | lib_mysqludf_str version 0.3 |
     +------------------------------+
 
 
@@ -71,7 +71,7 @@ TROUBLESHOOTING
     reason, it could not "see" the UDF in the DLL module.
 
     If you are typing the CREATE FUNCTION statements manually, make sure that
-    you have typed the UDF name exactly as listed in installdb.sql. For example,
+    you have typed the UDF name exactly as listed in installdb.win.sql. For example,
     instead of "STR_XOR", you must type "str_xor" (all lowercase).
 
 

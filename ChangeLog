@@ -1,12 +1,18 @@
+Version 0.3 (2011-??-??)
+	- added str_srand function
+	- fixed buffer overrun vulnerabilities
+	- updated str_numtowords to support 128-bit integers (Note: the largest integer that can be passed to a MySQL UDF depends on the size of the system's long long int type, generaly 64 bits.)
+
 Version 0.2 (2011-03-07)
 	- added str_xor function
+	- added Visual Studio 2010 project files
 
 Version 0.1.2 (2007-10-30)
 	- use autotools for build proces
 
 Version 0.1.1 (2007-10-21)
 	- added the DLLEXP macro and code that should allow it to compile on Windows.
-	- fixed names, changed lib_mysqludf_string to lib_mysqludf_str 
+	- fixed names, changed lib_mysqludf_string to lib_mysqludf_str
 
 Version 0.1.0 (2007-10-20)
 	- added str_numtowords function
@@ -19,6 +25,6 @@ Version 0.0.2 (2007-10-12)
 	- added ucfirst function
 	- added ucwords function
 	- added rot13 function
-	
+
 Version 0.0.1 (2007-10-10)
 	- first release with str_translate function

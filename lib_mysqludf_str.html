@@ -18,7 +18,7 @@
 	|	<a href="lib_mysqludf_str.c">Source</a>
 	</div>
 	<p>
-		MySQL already supports a <a href="http://dev.mysql.com/doc/refman/5.5/en/string-functions.html">number of string functions natively</a>. 
+		MySQL already supports a <a href="http://dev.mysql.com/doc/refman/5.5/en/string-functions.html">number of string functions natively</a>.
 		However, these string functions are not exhaustive and other string functions can ease the development of MySQL-based applications.
 		Users coming from a PHP or Perl background, for instance, may expect to find their entire set of string functions in MySQL.
 		<code>lib_mysqludf_str</code> aims to offer a library of string functions which complement the native ones.
@@ -41,7 +41,7 @@
 	</p>
 	<a name="str_numtowords"></a><h1>str_numtowords</h1>
 	<p>
-		<code>str_numtowords</code> converts numbers written in arabic digits to an english word. Positive and negative numbers up to 9 digits long are supported.
+		<code>str_numtowords</code> converts numbers written in arabic digits to an english word. All integers in the range <nobr>[-2<sup>63</sup>, 2<sup>63</sup> - 1]</nobr> are supported.
 	</p>
 	<h3>Syntax</h3>
 <pre>str_numtowords(<b>num</b>)</pre>
@@ -50,7 +50,7 @@
 		<dt><code>num</code></dt>
 		<dd>
 			The integer number to be converted to string.
-			If <code>num</code> is not an integer type or it is NULL, an error will be returned. 
+			If <code>num</code> is not an integer type or it is NULL, an error will be returned.
 		</dd>
 		<dt>returns</dt>
 		<dd>
@@ -69,12 +69,12 @@ SELECT str_numtowords(123456) as price;
 +----------------------------------------------------------+
 | price                                                    |
 +----------------------------------------------------------+
-| one hundred twenty-three thousand four hundred fifty-six | 
+| one hundred twenty-three thousand four hundred fifty-six |
 +----------------------------------------------------------+
-	</pre>	
+	</pre>
 	<a name="str_rot13"></a><h1>str_rot13</h1>
 	<p>
-		<code>str_rot13</code> performs the rot13 transform on a string, shifting each character	by 13 places in the alphabet, and wrapping back to the beginning if necessary. Non-alphabetic character will not be modified.
+		<code>str_rot13</code> performs the rot13 transform on a string, shifting each character	by 13 places in the alphabet, and wrapping back to the beginning if necessary. Non-alphabetic characters are not modified.
 	</p>
 	<h3>Syntax</h3>
 <pre>str_rot13(<b>subject</b>)</pre>
@@ -82,8 +82,8 @@ SELECT str_numtowords(123456) as price;
 	<dl>
 		<dt><code>subject</code></dt>
 		<dd>
-			The string to be transformed. 
-			If <code>subject</code> is not a string type or it is NULL, an error will be returned. 
+			The string to be transformed.
+			If <code>subject</code> is not a string type or it is NULL, an error will be returned.
 		</dd>
 		<dt>returns</dt>
 		<dd>
@@ -102,9 +102,9 @@ SELECT str_rot13('secret message') as crypted;
 +----------------+
 | crypted        |
 +----------------+
-| frperg zrffntr | 
+| frperg zrffntr |
 +----------------+
-	</pre>	
+	</pre>
 	<p>
 		Decrypting a rot13-encoded string (applying again the same function):
 	</p>
@@ -116,7 +116,7 @@ SELECT str_rot13('frperg zrffntr') as decrypted;
 +----------------+
 | decrypted      |
 +----------------+
-| secret message | 
+| secret message |
 +----------------+
 	</pre>
 	<a name="str_shuffle"></a><h1>str_shuffle</h1>
@@ -130,7 +130,7 @@ SELECT str_rot13('frperg zrffntr') as decrypted;
 		<dt><code>subject</code></dt>
 		<dd>
 			A <code>string</code> value to be shuffled.
-			If <code>str</code> is not a string type or it is NULL, an error will be returned. 
+			If <code>str</code> is not a string type or it is NULL, an error will be returned.
 		</dd>
 		<dt>returns</dt>
 		<dd>
@@ -149,7 +149,7 @@ SELECT str_shuffle('shake me!') as nonsense;
 +-----------+
 | nonsense  |
 +-----------+
-| esm a!khe | 
+| esm a!khe |
 +-----------+
 	</pre>
 	<a name="str_translate"></a><h1>str_translate</h1>
@@ -163,18 +163,18 @@ SELECT str_shuffle('shake me!') as nonsense;
 		<dt><code>subject</code></dt>
 		<dd>
 			A <code>string</code> value whose characters have to be transformed.
-			If <code>subject</code> is not a string type or it is NULL, an error will be returned. 
+			If <code>subject</code> is not a string type or it is NULL, an error will be returned.
 		</dd>
 		<dt><code>srcchar</code></dt>
 		<dd>
 			A <code>string</code> value containing the characters to be searched and replaced, if present.
-			If <code>srcchar</code> is not a string type or it is NULL, an error will be returned. 
+			If <code>srcchar</code> is not a string type or it is NULL, an error will be returned.
 			<code>srcchar</code> must contain the same number of characters of <code>dstchar</code>.
 		</dd>
 		<dt><code>dstchar</code></dt>
 		<dd>
 			A <code>string</code> value containing the characters which will replace the corresponding ones in srcchar.
-			If <code>dstchar</code> is not a string type or it is NULL, an error will be returned. 
+			If <code>dstchar</code> is not a string type or it is NULL, an error will be returned.
 			<code>dstchar</code> must contain the same number of characters of <code>srcchar</code>.
 		</dd>
 		<dt>returns</dt>
@@ -194,7 +194,7 @@ SELECT str_translate('a big string', 'ab', 'xy');
 +--------------+
 | translated   |
 +--------------+
-| x yig string | 
+| x yig string |
 +--------------+
 	</pre>
 	<a name="str_ucfirst"></a><h1>str_ucfirst</h1>
@@ -209,7 +209,7 @@ SELECT str_translate('a big string', 'ab', 'xy');
 		<dt><code>subject</code></dt>
 		<dd>
 			A <code>string</code> value whose first character will be transformed into uppercase.
-			If <code>subject</code> is not a string type or it is NULL, an error will be returned. 
+			If <code>subject</code> is not a string type or it is NULL, an error will be returned.
 		</dd>
 		<dt>returns</dt>
 		<dd>
@@ -228,7 +228,7 @@ SELECT str_ucfirst('sample string') as capitalized;
 +---------------+
 | capitalized   |
 +---------------+
-| Sample string | 
+| Sample string |
 +---------------+
 	</pre>
 	<h3>See Also</h3>
@@ -247,7 +247,7 @@ SELECT str_ucfirst('sample string') as capitalized;
 		<dt><code>subject</code></dt>
 		<dd>
 			A <code>string</code> value where the	first character of each string will be transformed into uppercase.
-			If <code>subject</code> is not a string type or it is NULL, an error will be returned. 
+			If <code>subject</code> is not a string type or it is NULL, an error will be returned.
 		</dd>
 		<dt>returns</dt>
 		<dd>
@@ -266,7 +266,7 @@ SELECT str_ucwords('a string composed of many words') as capitalized;
 +---------------------------------+
 | capitalized                     |
 +---------------------------------+
-| A String Composed Of Many Words | 
+| A String Composed Of Many Words |
 +---------------------------------+
 	</pre>
 	<h3>See Also</h3>
@@ -360,7 +360,7 @@ mysql> SELECT LENGTH(str_srand(5)) as len;
 +-----+
 </pre>
 	<h3>Since</h3>
-	<p>Version ????</p>
+	<p>Version 0.3</p>
 	<h3>See Also</h3>
 	<ul>
 		<li><q><a href="https://secure.wikimedia.org/wikipedia/en/wiki/CSPRNG">CSPRNG</a></q>. Wikipedia.</li>
@@ -387,7 +387,7 @@ SELECT lib_mysqludf_str_info() as info;
 +------------------------------+
 | info                         |
 +------------------------------+
-| lib_mysqludf_str version 0.2 |
+| lib_mysqludf_str version 0.3 |
 +------------------------------+
 	</pre>
 </body>
