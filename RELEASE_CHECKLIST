@@ -12,6 +12,8 @@ This is a checklist of the steps to follow when preparing a new release.
   * Update the macro def of PACKAGE_VERSION in config.h (for Windows/Visual Studio
     users).
 
+  * Update the version number that is listed twice in README.win32.txt and README.win64.txt
+
   * Make sure that there are no uncommitted changes in the working tree. Push
     all commits to GitHub.
 
@@ -32,7 +34,7 @@ This assumes that Windows is 64-bit.
 
   * Install the newly-built DLL to the MySQL plugin directory.
 
-  * Source uninstalldb.sql, then installdb.sql, to make sure that there are no
+  * Source uninstalldb.sql, then installdb.win.sql, to make sure that there are no
     obvious problems.
 
   * Make sure that the new version is listed in the result of:
