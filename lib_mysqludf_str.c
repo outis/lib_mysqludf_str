@@ -33,7 +33,12 @@
 #include <m_ctype.h>
 
 #ifdef __WIN__
+#ifndef _WIN64
+#define SystemFunction036 NTAPI SystemFunction036
+#endif
+
 #include <ntsecapi.h>
+#undef SystemFunction036
 #else
 #include <fcntl.h>
 #include <unistd.h>

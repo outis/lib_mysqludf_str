@@ -27,12 +27,14 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PlatformToolset>Windows7.1SDK</PlatformToolset>
@@ -118,6 +120,9 @@
     <PostBuildEvent>
       <Command>XCOPY "$(TargetDir)$(TargetName).*" "C:\Program Files\MySQL\MySQL Server 5.5\lib\plugin\" /EXCLUDE:xcopy_excludelist.txt /Y</Command>
     </PostBuildEvent>
+    <ClCompile>
+      <PreprocessorDefinitions>_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
@@ -127,6 +132,9 @@
     <PostBuildEvent>
       <Command>XCOPY "$(TargetDir)$(TargetName).*" "C:\Program Files\MySQL\MySQL Server 5.5\lib\plugin\" /EXCLUDE:xcopy_excludelist.txt /Y</Command>
     </PostBuildEvent>
+    <ClCompile>
+      <PreprocessorDefinitions>_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="char_vector.c" />
