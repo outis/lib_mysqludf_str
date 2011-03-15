@@ -1,7 +1,7 @@
 Version 0.3 (2011-??-??)
 	- added str_srand function
 	- fixed buffer overrun vulnerabilities
-	- updated str_numtowords to support 128-bit integers (Note: the largest integer that can be passed to a MySQL UDF depends on the size of the system's long long int type, generaly 64 bits.)
+	- updated str_numtowords to support 128-bit integers (Note: the largest integer that can be passed to a MySQL UDF depends on the size of the system's long long int type, generally 64 bits.)
 
 Version 0.2 (2011-03-07)
 	- added str_xor function
