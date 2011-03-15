@@ -63,7 +63,7 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 lib_mysqludf_str_la_LIBADD =
-am_lib_mysqludf_str_la_OBJECTS =  \
+am_lib_mysqludf_str_la_OBJECTS = lib_mysqludf_str_la-char_vector.lo \
 	lib_mysqludf_str_la-lib_mysqludf_str.lo
 lib_mysqludf_str_la_OBJECTS = $(am_lib_mysqludf_str_la_OBJECTS)
 lib_mysqludf_str_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -222,7 +222,7 @@ lib_LTLIBRARIES = lib_mysqludf_str.la
 ### Source files used by this project.  Note the prefix to SOURCES is the
 ### target library.
 ###
-lib_mysqludf_str_la_SOURCES = lib_mysqludf_str.c
+lib_mysqludf_str_la_SOURCES = char_vector.c char_vector.h lib_mysqludf_str.c
 
 ###
 ### This defines the CFLAGS that are passed to the compiler.  The variables
@@ -325,6 +325,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib_mysqludf_str_la-char_vector.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lib_mysqludf_str_la-lib_mysqludf_str.Plo@am__quote@
 
 .c.o:
@@ -347,6 +348,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+lib_mysqludf_str_la-char_vector.lo: char_vector.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib_mysqludf_str_la_CFLAGS) $(CFLAGS) -MT lib_mysqludf_str_la-char_vector.lo -MD -MP -MF $(DEPDIR)/lib_mysqludf_str_la-char_vector.Tpo -c -o lib_mysqludf_str_la-char_vector.lo `test -f 'char_vector.c' || echo '$(srcdir)/'`char_vector.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/lib_mysqludf_str_la-char_vector.Tpo $(DEPDIR)/lib_mysqludf_str_la-char_vector.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='char_vector.c' object='lib_mysqludf_str_la-char_vector.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib_mysqludf_str_la_CFLAGS) $(CFLAGS) -c -o lib_mysqludf_str_la-char_vector.lo `test -f 'char_vector.c' || echo '$(srcdir)/'`char_vector.c
 
 lib_mysqludf_str_la-lib_mysqludf_str.lo: lib_mysqludf_str.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lib_mysqludf_str_la_CFLAGS) $(CFLAGS) -MT lib_mysqludf_str_la-lib_mysqludf_str.lo -MD -MP -MF $(DEPDIR)/lib_mysqludf_str_la-lib_mysqludf_str.Tpo -c -o lib_mysqludf_str_la-lib_mysqludf_str.lo `test -f 'lib_mysqludf_str.c' || echo '$(srcdir)/'`lib_mysqludf_str.c

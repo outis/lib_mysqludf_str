@@ -8,7 +8,7 @@ lib_LTLIBRARIES = lib_mysqludf_str.la
 ### Source files used by this project.  Note the prefix to SOURCES is the
 ### target library.
 ###
-lib_mysqludf_str_la_SOURCES = lib_mysqludf_str.c
+lib_mysqludf_str_la_SOURCES = char_vector.c char_vector.h lib_mysqludf_str.c
 
 ###
 ### This defines the CFLAGS that are passed to the compiler.  The variables
@@ -42,4 +42,3 @@ mrproper:
 	make clean
 	make maintainer-clean
 	rm -rf config.guess config.h.* config.status configure missing config.sub ltmain.sh depcomp aclocal.m4 install.sh config.log compile Makefile.in *.loT mkinstalldirs install-sh *~
-
