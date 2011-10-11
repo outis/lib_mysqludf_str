@@ -115,6 +115,7 @@ extern "C" {
 	DLLEXP char *name_id(UDF_INIT *, UDF_ARGS *, char *, unsigned long *, char *, char *);
 
 DECLARE_STRING_UDF(lib_mysqludf_str_info)
+DECLARE_STRING_UDF(str_capitalize)
 DECLARE_STRING_UDF(str_numtowords)
 DECLARE_STRING_UDF(str_rot13)
 DECLARE_STRING_UDF(str_shuffle)
@@ -192,6 +193,92 @@ char *lib_mysqludf_str_info(UDF_INIT *initid, UDF_ARGS *args,
 	*res_length = (sizeof LIBVERSION) - 1;
 	return result;
 }
+
+
+/****************
+ * str_capitalize: Uppercase the first character of a string, lowercase the rest 
+ ****************/
+my_bool str_capitalize_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+{
+	static const char funcname[] = "str_capitalize";
+	unsigned long res_length;
+
+	/* make sure user has provided exactly one string argument */
+	ARGCOUNTCHECK("string");
+	STRARGCHECK;
+
+	res_length = args->lengths[0];
+
+	if (SIZE_MAX < res_length) {
+		snprintf(message, MYSQL_ERRMSG_SIZE, "res_length (%lu) cannot be greater than SIZE_MAX (%zu)", res_length, (size_t) (SIZE_MAX));
+		return 1;
+	}
+
+	initid->ptr = NULL;
+
+	if (res_length > 255) {
+		char *tmp = (char *) malloc((size_t) res_length); /* This is a safe cast because res_length <= SIZE_MAX. */
+		if (tmp == NULL)
+		{
+			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) res_length);
+			return 1;
+		}
+		initid->ptr = tmp;
+	}
+
+	initid->maybe_null = 1;
+	initid->max_length = res_length;
+	return 0;
+}
+
+void str_capitalize_deinit(UDF_INIT *initid ATTRIBUTE_UNUSED)
+{
+	if (initid->ptr != NULL)
+		free(initid->ptr);
+}
+
+/******************************************************************************
+** purpose:	make a string's first character uppercase, and remaining characters lowercase.
+** receives:	pointer to UDF_INIT struct which contains pre-allocated memory
+**					in which work can be done; pointer to UDF_ARGS struct which
+**					contains the functions arguments and data about them; pointer
+**					to mem which can be set to 1 if the result is NULL; pointer
+**					to mem which can be set to 1 if the calculation resulted in an
+**					error
+** returns:	the original string with the first character capitalized
+******************************************************************************/
+char *str_capitalize(UDF_INIT *initid, UDF_ARGS *args,
+			char *result, unsigned long *res_length,
+			char *null_value, char *error)
+{
+	int i;
+	if (args->args[0] == NULL) {
+		result = NULL;
+		*res_length = 0;
+		*null_value = 1;
+		return result;
+	}
+
+	if (initid->ptr != NULL) {
+		result = initid->ptr;
+	}
+
+	// copy the argument string into result
+	//memcpy(result, args->args[0], args->lengths[0]);
+
+	// capitalize the first character of the string
+	//*result = my_toupper(&DFLT_CHARSET, *result);
+	*result = my_toupper(&DFLT_CHARSET, args->args[0][0]);
+	*res_length = args->lengths[0];
+	for (i = 1; i < *res_length; ++i) {
+		result[i] = my_tolower(&DFLT_CHARSET, args->args[0][i]);
+	}
+	*null_value = 0;
+	*error = 0;
+	return result;
+}
+
+
 
 
 /******************************************************************************
