@@ -616,7 +616,7 @@ my_bool str_translate_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 		snprintf(message, MYSQL_ERRMSG_SIZE, "wrong argument type: str_translate requires three string arguments (subject, srcchar, dstchar).");
 		return 1;
 	} else if (args->lengths[1] != args->lengths[2]) {
-		strcpy(message,"argument length mismatch: str_translate(subject, srcchar, dstchar) requires srcchar and dstchar to have the same length.");
+		strncpy(message,"str_translate(subject, srcchar, dstchar) requires srcchar and dstchar to have the same length", MYSQL_ERRMSG_SIZE);
 		return 1;
 	}
 
