@@ -98,6 +98,8 @@
 #define STRARGCHECK ARGTYPECHECK(args->arg_type[0], STRING_RESULT, "string")
 #define INTARGCHECK ARGTYPECHECK(args->arg_type[0], INT_RESULT, "integer")
 
+#define DFLT_CHARSET my_charset_utf8_general_ci
+
 /******************************************************************************
 ** function declarations
 ******************************************************************************/
@@ -785,8 +787,8 @@ char *str_ucfirst(UDF_INIT *initid, UDF_ARGS *args,
 	memcpy(result, args->args[0], args->lengths[0]);
 
 	// capitalize the first character of the string
-	*result = my_toupper(&my_charset_latin1, *result);
-		
+	*result = my_toupper(&DFLT_CHARSET, *result);
+
 	*res_length = args->lengths[0];
 	*null_value = 0;
 	*error = 0;
@@ -892,10 +894,10 @@ char *str_ucwords(UDF_INIT *initid, UDF_ARGS *args,
 
 	// capitalize the first character of each word in the string
 	for (i = 0; i < *res_length; i++) {
-		if (my_isalpha(&my_charset_latin1, result[i])) {
+		if (my_isalpha(&DFLT_CHARSET, result[i])) {
 			if (!new_word) {
 				new_word = 1;
-				result[i] = my_toupper(&my_charset_latin1, result[i]);
+				result[i] = my_toupper(&DFLT_CHARSET, result[i]);
 			}
 		} else {
 			new_word = 0;
