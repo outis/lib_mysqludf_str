@@ -82,6 +82,22 @@
 #define LIBVERSION ("lib_mysqludf_str version " PACKAGE_VERSION)
 #define ROT_OFFSET 13
 
+#define ARGCOUNTCHECK(typestr)	\
+	if (args->arg_count != 1) { \
+		snprintf(message, MYSQL_ERRMSG_SIZE, "wrong argument count: %s requires one " typestr " argument, got %d arguments", funcname, args->arg_count); \
+		return 1; \
+	}
+
+
+#define ARGTYPECHECK(arg, type, typestr)	\
+	if (arg != type) { \
+		snprintf(message, MYSQL_ERRMSG_SIZE, "wrong argument type: %s requires one " typestr " argument. Expected type %d, got type %d.", funcname, type, arg); \
+		return 1; \
+	}
+
+#define STRARGCHECK ARGTYPECHECK(args->arg_type[0], STRING_RESULT, "string")
+#define INTARGCHECK ARGTYPECHECK(args->arg_type[0], INT_RESULT, "integer")
+
 /******************************************************************************
 ** function declarations
 ******************************************************************************/
@@ -192,14 +208,12 @@ char *lib_mysqludf_str_info(UDF_INIT *initid, UDF_ARGS *args,
 ******************************************************************************/
 my_bool str_numtowords_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+	static const char funcname[] = "str_numtowords";
 	st_char_vector *vec;
 
 	/* make sure user has provided exactly one integer argument */
-	if (args->arg_count != 1 || args->arg_type[0] != INT_RESULT || args->args[0] == NULL)
-	{
-		strcpy(message,"str_numtowords requires one integer argument");
-		return 1;
-	}
+	ARGCOUNTCHECK("integer");
+	INTARGCHECK;
 
 	vec = char_vector_alloc();
 	if (vec == NULL)
@@ -210,8 +224,7 @@ my_bool str_numtowords_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 
 	initid->ptr = (char *) vec;
 
-	/* str_numtowords() will not be returning null */
-	initid->maybe_null=0;
+	initid->maybe_null=1;
 
 	return 0;
 }
@@ -256,6 +269,13 @@ char *str_numtowords(UDF_INIT *initid, UDF_ARGS *args,
 																"sixteen", "seventeen", "eighteen", "nineteen"};
 
 	static const char *const tens[] = {"twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
+
+	if (args->args[0] == NULL) {
+		result = NULL;
+		*res_length = 0;
+		*null_value = 1;
+		return result;
+	}
 
 	st_char_vector *vec = (st_char_vector *) initid->ptr;
 
@@ -343,14 +363,12 @@ char *str_numtowords(UDF_INIT *initid, UDF_ARGS *args,
 ******************************************************************************/
 my_bool str_rot13_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+	static const char funcname[] = "str_rot13";
 	unsigned long res_length;
 
 	/* make sure user has provided exactly one string argument */
-	if (args->arg_count != 1 || args->arg_type[0] != STRING_RESULT || args->args[0] == NULL)
-	{
-		strcpy(message,"str_rot13 requires one string argument");
-		return 1;
-	}
+	ARGCOUNTCHECK("string");
+	STRARGCHECK;
 
 	res_length = args->lengths[0];
 
@@ -373,7 +391,7 @@ my_bool str_rot13_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 		initid->ptr = tmp;
 	}
 
-	initid->maybe_null = 0;
+	initid->maybe_null = 1;
 	initid->max_length = res_length;
 	return 0;
 }
@@ -410,6 +428,13 @@ char *str_rot13(UDF_INIT *initid, UDF_ARGS *args,
 			char *null_value, char *error)
 {
 	int i, cod_ascii;
+
+	if (args->args[0] == NULL) {
+		result = NULL;
+		*res_length = 0;
+		*null_value = 1;
+		return result;
+	}
 
 	// s will contain the user-supplied argument
 	const char *s = args->args[0];
@@ -465,14 +490,12 @@ char *str_rot13(UDF_INIT *initid, UDF_ARGS *args,
 
 my_bool str_shuffle_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+	static const char funcname[] = "str_shuffle";
 	unsigned long res_length;
 
 	/* make sure user has provided exactly one string argument */
-	if (args->arg_count != 1 || args->arg_type[0] != STRING_RESULT || args->args[0] == NULL)
-	{
-		strcpy(message,"str_shuffle requires one string argument");
-		return 1;
-	}
+	ARGCOUNTCHECK("string");
+	STRARGCHECK;
 
 	res_length = args->lengths[0];
 
@@ -495,7 +518,7 @@ my_bool str_shuffle_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 		initid->ptr = tmp;
 	}
 
-	initid->maybe_null = 0;
+	initid->maybe_null = 1;
 	initid->max_length = res_length;
 	return 0;
 }
@@ -530,6 +553,13 @@ char *str_shuffle(UDF_INIT *initid, UDF_ARGS *args,
 {
 	int i, j;
 	char swp;
+
+	if (args->args[0] == NULL) {
+		result = NULL;
+		*res_length = 0;
+		*null_value = 1;
+		return result;
+	}
 
 	if (initid->ptr != NULL)
 	{
@@ -572,18 +602,21 @@ char *str_shuffle(UDF_INIT *initid, UDF_ARGS *args,
 
 my_bool str_translate_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+	static const char funcname[] = "str_translate";
 	unsigned long res_length;
 
 	/* make sure user has provided exactly three string arguments */
-	if (args->arg_count != 3 || args->arg_type[0] != STRING_RESULT || args->arg_type[1] != STRING_RESULT || args->arg_type[2] != STRING_RESULT ||
-		args->args[0] == NULL || args->args[1] == NULL || args->args[2] == NULL)
-	{
-		strcpy(message,"str_translate requires three string arguments (subject, srcchar, dstchar)");
+	if (args->arg_count != 3) {
+		snprintf(message, MYSQL_ERRMSG_SIZE, "wrong argument count: str_translate requires three string arguments (subject, srcchar, dstchar), got %d argument%s.", args->arg_count, (args->arg_count == 1 ? "" : "s"));
 		return 1;
-	}
-	else if (args->lengths[1] != args->lengths[2])
+	} else if (args->arg_type[0] != STRING_RESULT 
+			|| args->arg_type[1] != STRING_RESULT
+			|| args->arg_type[2] != STRING_RESULT)
 	{
-		strcpy(message,"str_translate(subject, srcchar, dstchar) requires srcchar and dstchar to have the same length");
+		snprintf(message, MYSQL_ERRMSG_SIZE, "wrong argument type: str_translate requires three string arguments (subject, srcchar, dstchar).");
+		return 1;
+	} else if (args->lengths[1] != args->lengths[2]) {
+		strcpy(message,"argument length mismatch: str_translate(subject, srcchar, dstchar) requires srcchar and dstchar to have the same length.");
 		return 1;
 	}
 
@@ -608,7 +641,7 @@ my_bool str_translate_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 		initid->ptr = tmp;
 	}
 
-	initid->maybe_null = 0;
+	initid->maybe_null = 1;
 	initid->max_length = res_length;
 	return 0;
 }
@@ -644,6 +677,13 @@ char *str_translate(UDF_INIT *initid, UDF_ARGS *args,
 			char *null_value, char *error)
 {
 	int i, j;
+
+	if (args->args[0] == NULL || args->args[1] == NULL || args->args[2] == NULL) {
+		result = NULL;
+		*res_length = 0;
+		*null_value = 1;
+		return result;
+	}
 
 	// subject will contain the string to be translated
 	const char *subject = args->args[0];
@@ -702,14 +742,12 @@ char *str_translate(UDF_INIT *initid, UDF_ARGS *args,
 
 my_bool str_ucfirst_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+	static const char funcname[] = "str_ucfirst";
 	unsigned long res_length;
 
 	/* make sure user has provided exactly one string argument */
-	if (args->arg_count != 1 || args->arg_type[0] != STRING_RESULT || args->args[0] == NULL)
-	{
-		strcpy(message,"str_ucfirst requires one string argument");
-		return 1;
-	}
+	ARGCOUNTCHECK("string");
+	STRARGCHECK;
 
 	res_length = args->lengths[0];
 
@@ -732,7 +770,7 @@ my_bool str_ucfirst_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 		initid->ptr = tmp;
 	}
 
-	initid->maybe_null = 0;
+	initid->maybe_null = 1;
 	initid->max_length = res_length;
 	return 0;
 }
@@ -765,8 +803,14 @@ char *str_ucfirst(UDF_INIT *initid, UDF_ARGS *args,
 			char *result, unsigned long *res_length,
 			char *null_value, char *error)
 {
-	if (initid->ptr != NULL)
-	{
+	if (args->args[0] == NULL) {
+		result = NULL;
+		*res_length = 0;
+		*null_value = 1;
+		return result;
+	}
+
+	if (initid->ptr != NULL) {
 		result = initid->ptr;
 	}
 
@@ -800,14 +844,12 @@ char *str_ucfirst(UDF_INIT *initid, UDF_ARGS *args,
 
 my_bool str_ucwords_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+	static const char funcname[] = "str_ucwords";
 	unsigned long res_length;
 
 	/* make sure user has provided exactly one string argument */
-	if (args->arg_count != 1 || args->arg_type[0] != STRING_RESULT || args->args[0] == NULL)
-	{
-		strncpy(message, "str_ucwords requires one non-NULL string argument", MYSQL_ERRMSG_SIZE);
-		return 1;
-	}
+	ARGCOUNTCHECK("string");
+	STRARGCHECK;
 
 	res_length = args->lengths[0];
 
@@ -830,7 +872,7 @@ my_bool str_ucwords_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 		initid->ptr = tmp;
 	}
 
-	initid->maybe_null = 0;
+	initid->maybe_null = 1;
 	initid->max_length = res_length;
 	return 0;
 }
@@ -868,8 +910,14 @@ char *str_ucwords(UDF_INIT *initid, UDF_ARGS *args,
 	int i;
 	int new_word = 0;
 
-	if (initid->ptr != NULL)
-	{
+	if (args->args[0] == NULL) {
+		result = NULL;
+		*res_length = 0;
+		*null_value = 1;
+		return result;
+	}
+
+	if (initid->ptr != NULL) {
 		result = initid->ptr;
 	}
 
@@ -908,13 +956,18 @@ char *str_ucwords(UDF_INIT *initid, UDF_ARGS *args,
 ******************************************************************************/
 my_bool str_xor_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+	static const char funcname[] = "str_xor";
 	unsigned long res_length;
 
-	if (args->arg_count != 2 || args->arg_type[0] != STRING_RESULT ||
-			args->arg_type[1] != STRING_RESULT || args->args[0] == NULL ||
-			args->args[1] == NULL)
+	if (args->arg_count != 2)
 	{
-		strncpy(message, "str_xor requires exactly two non-NULL string arguments", MYSQL_ERRMSG_SIZE);
+		snprintf(message, MYSQL_ERRMSG_SIZE, "wrong argument count: str_xor requires exactly two string arguments, got %d arguments.", MYSQL_ERRMSG_SIZE, args->arg_count);
+		return 1;
+	}
+	if (args->arg_type[0] != STRING_RESULT 
+			|| args->arg_type[1] != STRING_RESULT)
+	{
+		strncpy(message, "wrong argument type: str_xor requires two string arguments", MYSQL_ERRMSG_SIZE);
 		return 1;
 	}
 
@@ -941,7 +994,7 @@ my_bool str_xor_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 		initid->ptr = tmp;
 	}
 
-	initid->maybe_null = 0;
+	initid->maybe_null = 1;
 	initid->max_length = res_length;
 	return 0;
 }
@@ -970,7 +1023,14 @@ char *str_xor(UDF_INIT *initid, UDF_ARGS *args, char *result,
 {
 	assert(args->arg_count == 2);
 	assert(args->arg_type[0] == STRING_RESULT && args->arg_type[1] == STRING_RESULT);
-	assert(args->args[0] != NULL && args->args[1] != NULL);
+	//assert(args->args[0] != NULL && args->args[1] != NULL);
+	if (args->args[0] == NULL || args->args[1] == NULL) {
+		result = NULL;
+		*res_length = 0;
+		*null_value = 1;
+		return result;
+	}
+
 
 	if (initid->ptr != NULL)
 	{
@@ -1025,12 +1085,15 @@ typedef struct st_str_srand_data {
 
 my_bool str_srand_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+	static const char funcname[] = "str_srand_init";
 	long long *arg0;
 
-	if (args->arg_count != 1 || args->arg_type[0] != INT_RESULT ||
-			(arg0 = (long long *) args->args[0]) == NULL || *arg0 < 0)
-	{
-		strncpy(message, "str_srand requires exactly one non-NULL, non-negative integer argument", MYSQL_ERRMSG_SIZE);
+	ARGCOUNTCHECK("non-negative integer");
+	ARGTYPECHECK(args->arg_type[0], INT_RESULT, "non-negative integer");
+
+	arg0 = (long long *) args->args[0];
+	if (arg0 < 0) {
+		snprintf(message, MYSQL_ERRMSG_SIZE, "wrong argument type: str_srand requires one non-negative integer argument; argument was negative (%d)", MYSQL_ERRMSG_SIZE, arg0);
 		return 1;
 	}
 	else if (MAX_RANDOM_BYTES < *arg0)
@@ -1101,7 +1164,7 @@ my_bool str_srand_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	}
 #endif
 
-	initid->maybe_null = 0;
+	initid->maybe_null = 1;
 	initid->max_length = (unsigned long) *arg0; /* This is a safe cast because 0 ≤ *arg0 ≤ ULONG_MAX */
 	return 0;
 }
@@ -1129,8 +1192,16 @@ char *str_srand(UDF_INIT *initid, UDF_ARGS *args, char *result,
 	long long *arg0;
 
 	assert(args->arg_count == 1 && args->arg_type[0] == INT_RESULT);
+
+	if (args->args[0] == NULL) {
+		result = NULL;
+		*res_length = 0;
+		*null_value = 1;
+		return result;
+	}
+
 	arg0 = (long long *) args->args[0];
-	assert(arg0 != NULL && 0 <= *arg0 && *arg0 <= MAX_RANDOM_BYTES && *arg0 <= SIZE_MAX && *arg0 <= ULONG_MAX);
+	assert(0 <= *arg0 && *arg0 <= MAX_RANDOM_BYTES && *arg0 <= SIZE_MAX && *arg0 <= ULONG_MAX);
 
 	*error = 1;
 
