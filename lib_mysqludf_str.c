@@ -287,13 +287,10 @@ char *str_numtowords(UDF_INIT *initid, UDF_ARGS *args,
 	assert(char_vector_length(vec) == 0);
 
 	// check for negative values or zero
-	if (value < 0)
-	{
+	if (value < 0) {
 		char_vector_append(vec, STR_COMMA_LENGTH("negative "));
 		value = -value;
-	}
-	else if (value == 0)
-	{
+	} else if (value == 0) {
 		char *tmp = "zero";
 		*res_length = STR_LENGTH("zero");
 		return tmp;
@@ -303,40 +300,31 @@ char *str_numtowords(UDF_INIT *initid, UDF_ARGS *args,
 	for (; value; value /= 1000)
 		*part_ptr++ = value % 1000;
 
-	while (part_ptr > part_stack)
-	{
+	while (part_ptr > part_stack) {
 		int p = *--part_ptr;
 
-		if (p >= 100)
-		{
+		if (p >= 100) {
 			char_vector_strcat(vec, ones[p / 100 - 1]);
 			char_vector_append(vec, STR_COMMA_LENGTH(" hundred "));
 			p %= 100;
 		}
 
-		if (p >= 20)
-		{
-			if (p % 10)
-			{
+		if (p >= 20) {
+			if (p % 10) {
 				char_vector_strcat(vec, tens[p / 10 - 2]);
 				char_vector_append(vec, STR_COMMA_LENGTH("-"));
 				char_vector_strcat(vec, ones[p % 10 - 1]);
 				char_vector_append(vec, STR_COMMA_LENGTH(" "));
-			}
-			else
-			{
+			} else {
 				char_vector_strcat(vec, tens[p / 10 - 2]);
 				char_vector_append(vec, STR_COMMA_LENGTH(" "));
 			}
-		}
-		else if (p > 0)
-		{
+		} else if (p > 0) {
 			char_vector_strcat(vec, ones[p - 1]);
 			char_vector_append(vec, STR_COMMA_LENGTH(" "));
 		}
 
-		if (p && part_ptr > part_stack)
-		{
+		if (p && part_ptr > part_stack) {
 			char_vector_strcat(vec, powers[part_ptr - part_stack - 1]);
 			char_vector_append(vec, STR_COMMA_LENGTH(" "));
 		}
@@ -372,19 +360,16 @@ my_bool str_rot13_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 
 	res_length = args->lengths[0];
 
-	if (SIZE_MAX < res_length)
-	{
+	if (SIZE_MAX < res_length) {
 		snprintf(message, MYSQL_ERRMSG_SIZE, "res_length (%lu) cannot be greater than SIZE_MAX (%zu)", res_length, (size_t) (SIZE_MAX));
 		return 1;
 	}
 
 	initid->ptr = NULL;
 
-	if (res_length > 255)
-	{
+	if (res_length > 255) {
 		char *tmp = (char *) malloc((size_t) res_length); /* This is a safe cast because res_length <= SIZE_MAX. */
-		if (tmp == NULL)
-		{
+		if (tmp == NULL) {
 			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) res_length);
 			return 1;
 		}
@@ -439,8 +424,7 @@ char *str_rot13(UDF_INIT *initid, UDF_ARGS *args,
 	// s will contain the user-supplied argument
 	const char *s = args->args[0];
 
-	if (initid->ptr != NULL)
-	{
+	if (initid->ptr != NULL) {
 		result = initid->ptr;
 	}
 
@@ -451,15 +435,12 @@ char *str_rot13(UDF_INIT *initid, UDF_ARGS *args,
 		// cod_ascii is an integer containing the ascii code of a single character
 		cod_ascii = s[i];
 
-		if(cod_ascii >= 97 && cod_ascii <= 122)	// lower case character
-		{
+		if(cod_ascii >= 97 && cod_ascii <= 122)	{ // lower case character
 			cod_ascii += ROT_OFFSET;
 
 			if(cod_ascii>122)
 				cod_ascii = 96 + (cod_ascii-122);
-		}
-		else if(cod_ascii >= 65 && cod_ascii <= 90)	// upper case character
-		{
+		} else if(cod_ascii >= 65 && cod_ascii <= 90)	{ // upper case character
 			cod_ascii += ROT_OFFSET;
 
 			if(cod_ascii>90)
@@ -507,11 +488,9 @@ my_bool str_shuffle_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 
 	initid->ptr = NULL;
 
-	if (res_length > 255)
-	{
+	if (res_length > 255) {
 		char *tmp = (char *) malloc((size_t) res_length); /* This is a safe cast because res_length <= SIZE_MAX. */
-		if (tmp == NULL)
-		{
+		if (tmp == NULL) {
 			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) res_length);
 			return 1;
 		}
@@ -561,8 +540,7 @@ char *str_shuffle(UDF_INIT *initid, UDF_ARGS *args,
 		return result;
 	}
 
-	if (initid->ptr != NULL)
-	{
+	if (initid->ptr != NULL) {
 		result = initid->ptr;
 	}
 
@@ -570,8 +548,7 @@ char *str_shuffle(UDF_INIT *initid, UDF_ARGS *args,
 	memcpy(result, args->args[0], args->lengths[0]);
 	*res_length = args->lengths[0];
 
-	for (i = 0; i < *res_length; i++)
-	{
+	for (i = 0; i < *res_length; i++) {
 		// select a random position to swap result[i]
 		j = i + rand() / (RAND_MAX / (*res_length - i) + 1);
 
@@ -622,19 +599,16 @@ my_bool str_translate_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 
 	res_length = args->lengths[0];
 
-	if (SIZE_MAX < res_length)
-	{
+	if (SIZE_MAX < res_length) {
 		snprintf(message, MYSQL_ERRMSG_SIZE, "res_length (%lu) cannot be greater than SIZE_MAX (%zu)", res_length, (size_t) (SIZE_MAX));
 		return 1;
 	}
 
 	initid->ptr = NULL;
 
-	if (res_length > 255)
-	{
+	if (res_length > 255) {
 		char *tmp = (char *) malloc((size_t) res_length); /* This is a safe cast because res_length <= SIZE_MAX. */
-		if (tmp == NULL)
-		{
+		if (tmp == NULL) {
 			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) res_length);
 			return 1;
 		}
@@ -695,8 +669,7 @@ char *str_translate(UDF_INIT *initid, UDF_ARGS *args,
 	// dst will contain the string to be translated
 	const char *dst = args->args[2];
 
-	if (initid->ptr != NULL)
-	{
+	if (initid->ptr != NULL) {
 		result = initid->ptr;
 	}
 
@@ -707,13 +680,10 @@ char *str_translate(UDF_INIT *initid, UDF_ARGS *args,
 	{
 		char *__restrict p = result;
 
-		for (i = 0; i < *res_length; ++i, ++p)
-		{
+		for (i = 0; i < *res_length; ++i, ++p) {
 			// for each character of the subject string we check if it is present in src
-			for (j = 0; j < src_length; j++)
-			{
-				if (subject[i] == src[j])
-				{
+			for (j = 0; j < src_length; j++) {
+				if (subject[i] == src[j]) {
 					// replace the character with the corresponding one from dst
 					*p = dst[j];
 				}
@@ -751,19 +721,16 @@ my_bool str_ucfirst_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 
 	res_length = args->lengths[0];
 
-	if (SIZE_MAX < res_length)
-	{
+	if (SIZE_MAX < res_length) {
 		snprintf(message, MYSQL_ERRMSG_SIZE, "res_length (%lu) cannot be greater than SIZE_MAX (%zu)", res_length, (size_t) (SIZE_MAX));
 		return 1;
 	}
 
 	initid->ptr = NULL;
 
-	if (res_length > 255)
-	{
+	if (res_length > 255) {
 		char *tmp = (char *) malloc((size_t) res_length); /* This is a safe cast because res_length <= SIZE_MAX. */
-		if (tmp == NULL)
-		{
+		if (tmp == NULL) {
 			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) res_length);
 			return 1;
 		}
@@ -819,7 +786,7 @@ char *str_ucfirst(UDF_INIT *initid, UDF_ARGS *args,
 
 	// capitalize the first character of the string
 	*result = my_toupper(&my_charset_latin1, *result);
-
+		
 	*res_length = args->lengths[0];
 	*null_value = 0;
 	*error = 0;
@@ -853,19 +820,16 @@ my_bool str_ucwords_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 
 	res_length = args->lengths[0];
 
-	if (SIZE_MAX < res_length)
-	{
+	if (SIZE_MAX < res_length) {
 		snprintf(message, MYSQL_ERRMSG_SIZE, "res_length (%lu) cannot be greater than SIZE_MAX (%zu)", res_length, (size_t) (SIZE_MAX));
 		return 1;
 	}
 
 	initid->ptr = NULL;
 
-	if (res_length > 255)
-	{
+	if (res_length > 255) {
 		char *tmp = (char *) malloc((size_t) res_length); /* This is a safe cast because res_length <= SIZE_MAX. */
-		if (tmp == NULL)
-		{
+		if (tmp == NULL) {
 			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) res_length);
 			return 1;
 		}
@@ -927,18 +891,13 @@ char *str_ucwords(UDF_INIT *initid, UDF_ARGS *args,
 	*res_length = args->lengths[0];
 
 	// capitalize the first character of each word in the string
-	for (i = 0; i < *res_length; i++)
-	{
-		if (my_isalpha(&my_charset_latin1, result[i]))
-		{
-			if (!new_word)
-			{
+	for (i = 0; i < *res_length; i++) {
+		if (my_isalpha(&my_charset_latin1, result[i])) {
+			if (!new_word) {
 				new_word = 1;
 				result[i] = my_toupper(&my_charset_latin1, result[i]);
 			}
-		}
-		else
-		{
+		} else {
 			new_word = 0;
 		}
 	}
@@ -959,8 +918,7 @@ my_bool str_xor_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	static const char funcname[] = "str_xor";
 	unsigned long res_length;
 
-	if (args->arg_count != 2)
-	{
+	if (args->arg_count != 2) {
 		snprintf(message, MYSQL_ERRMSG_SIZE, "wrong argument count: str_xor requires exactly two string arguments, got %d arguments.", MYSQL_ERRMSG_SIZE, args->arg_count);
 		return 1;
 	}
@@ -975,19 +933,16 @@ my_bool str_xor_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	if (args->lengths[1] > res_length)
 		res_length = args->lengths[1];
 
-	if (SIZE_MAX < res_length)
-	{
+	if (SIZE_MAX < res_length) {
 		snprintf(message, MYSQL_ERRMSG_SIZE, "res_length (%lu) cannot be greater than SIZE_MAX (%zu)", res_length, (size_t) (SIZE_MAX));
 		return 1;
 	}
 
 	initid->ptr = NULL;
 
-	if (res_length > 255)
-	{
+	if (res_length > 255) {
 		char *tmp = (char *) malloc((size_t) res_length); /* This is a safe cast because res_length <= SIZE_MAX. */
-		if (tmp == NULL)
-		{
+		if (tmp == NULL) {
 			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) res_length);
 			return 1;
 		}
@@ -1032,22 +987,20 @@ char *str_xor(UDF_INIT *initid, UDF_ARGS *args, char *result,
 	}
 
 
-	if (initid->ptr != NULL)
-	{
+	if (initid->ptr != NULL) {
 		result = initid->ptr;
 	}
 
 	{
 		char *__restrict p = result,
-				*arg0 = args->args[0],
-				*arg1 = args->args[1];
+				 *arg0 = args->args[0],
+				 *arg1 = args->args[1];
 		const unsigned long arg0_length = args->lengths[0],
-				arg1_length = args->lengths[1];
+				 arg1_length = args->lengths[1];
 		char *const arg0_end = arg0 + arg0_length;
 		char *const arg1_end = arg1 + arg1_length;
 
-		if (arg0_length <= arg1_length)
-		{
+		if (arg0_length <= arg1_length) {
 			for (; arg0 != arg0_end; ++arg0, ++arg1)
 				*p++ = (*arg0) ^ (*arg1);
 			//for (; arg1 != arg1_end; ++arg1)
@@ -1055,9 +1008,7 @@ char *str_xor(UDF_INIT *initid, UDF_ARGS *args, char *result,
 			memcpy(p, arg1, (arg1_end - arg1));
 
 			*res_length = arg1_length;
-		}
-		else
-		{
+		} else {
 			for (; arg1 != arg1_end; ++arg0, ++arg1)
 				*p++ = (*arg0) ^ (*arg1);
 			//for (; arg0 != arg0_end; ++arg0)
@@ -1095,19 +1046,13 @@ my_bool str_srand_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	if (arg0 < 0) {
 		snprintf(message, MYSQL_ERRMSG_SIZE, "wrong argument type: str_srand requires one non-negative integer argument; argument was negative (%d)", MYSQL_ERRMSG_SIZE, arg0);
 		return 1;
-	}
-	else if (MAX_RANDOM_BYTES < *arg0)
-	{
+	} else if (MAX_RANDOM_BYTES < *arg0) {
 		snprintf(message, MYSQL_ERRMSG_SIZE, "str_srand is limited to generating at most %lld bytes each execution", (long long) (MAX_RANDOM_BYTES));
 		return 1;
-	}
-	else if (SIZE_MAX < *arg0)
-	{
+	} else if (SIZE_MAX < *arg0) {
 		snprintf(message, MYSQL_ERRMSG_SIZE, "%lld cannot be greater than SIZE_MAX (%zu)", *arg0, (size_t) (SIZE_MAX));
 		return 1;
-	}
-	else if (ULONG_MAX < *arg0)
-	{
+	} else if (ULONG_MAX < *arg0) {
 		snprintf(message, MYSQL_ERRMSG_SIZE, "%lld cannot be greater than ULONG_MAX (%lu)", *arg0, (unsigned long) (ULONG_MAX));
 		return 1;
 	}
@@ -1115,11 +1060,9 @@ my_bool str_srand_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 #ifdef __WIN__
 	initid->ptr = NULL;
 
-	if (*arg0 > 255)
-	{
+	if (*arg0 > 255) {
 		char *tmp = (char *) malloc((size_t) *arg0); /* This is a safe cast because *arg0 <= SIZE_MAX. */
-		if (tmp == NULL)
-		{
+		if (tmp == NULL) {
 			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) *arg0);
 			return 1;
 		}
@@ -1130,19 +1073,16 @@ my_bool str_srand_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 		st_str_srand_data *p;
 
 		p = (st_str_srand_data *) malloc(sizeof (st_str_srand_data));
-		if (p == NULL)
-		{
+		if (p == NULL) {
 			snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (sizeof (st_str_srand_data)));
 			return 1;
 		}
 
 		p->buf = NULL;
 
-		if (*arg0 > 255)
-		{
+		if (*arg0 > 255) {
 			char *tmp = (char *) malloc((size_t) *arg0); /* This is a safe cast because *arg0 <= SIZE_MAX. */
-			if (tmp == NULL)
-			{
+			if (tmp == NULL) {
 				snprintf(message, MYSQL_ERRMSG_SIZE, "malloc() failed to allocate %zu bytes of memory", (size_t) *arg0);
 				free(p);
 				return 1;
@@ -1151,8 +1091,7 @@ my_bool str_srand_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 		}
 
 		p->fd = open("/dev/urandom", O_RDONLY);
-		if (p->fd == -1)
-		{
+		if (p->fd == -1) {
 			snprintf(message, MYSQL_ERRMSG_SIZE, "failed to open /dev/urandom for reading: %s", strerror(errno));
 			if (p->buf != NULL)
 				free(p->buf);
@@ -1172,8 +1111,7 @@ my_bool str_srand_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 void str_srand_deinit(UDF_INIT *initid)
 {
 #ifdef __WIN__
-	if (initid->ptr != NULL)
-	{
+	if (initid->ptr != NULL) {
 		free(initid->ptr);
 	}
 #else
@@ -1206,13 +1144,11 @@ char *str_srand(UDF_INIT *initid, UDF_ARGS *args, char *result,
 	*error = 1;
 
 #ifdef __WIN__
-	if (initid->ptr != NULL)
-	{
+	if (initid->ptr != NULL) {
 		result = initid->ptr;
 	}
 
-	if (TRUE == RtlGenRandom(result, (unsigned long) *arg0))
-	{
+	if (TRUE == RtlGenRandom(result, (unsigned long) *arg0)) {
 		*error = 0;
 	}
 #else
@@ -1220,23 +1156,19 @@ char *str_srand(UDF_INIT *initid, UDF_ARGS *args, char *result,
 		st_str_srand_data *p = (st_str_srand_data *) initid->ptr;
 		ssize_t ss = 0, tmp;
 
-		if (p->buf != NULL)
-		{
+		if (p->buf != NULL) {
 			result = p->buf;
 		}
 
-		do
-		{
+		do {
 			tmp = read(p->fd, result + ss, (size_t) (*arg0 - ss));
 
-			if (tmp != -1)
-			{
+			if (tmp != -1) {
 				ss += tmp;
 			}
 		} while (tmp > 0 && ss < *arg0);
 
-		if (tmp != -1 && ss >= *arg0)
-		{
+		if (tmp != -1 && ss >= *arg0) {
 			*error = 0;
 		}
 	}
