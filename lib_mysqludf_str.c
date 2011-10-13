@@ -874,7 +874,7 @@ char *str_ucwords(UDF_INIT *initid, UDF_ARGS *args,
 			char *null_value, char *error)
 {
 	int i;
-	int new_word = 0;
+	int new_word = 1;
 
 	if (args->args[0] == NULL) {
 		result = NULL;
@@ -895,12 +895,12 @@ char *str_ucwords(UDF_INIT *initid, UDF_ARGS *args,
 	// capitalize the first character of each word in the string
 	for (i = 0; i < *res_length; i++) {
 		if (my_isalpha(&DFLT_CHARSET, result[i])) {
-			if (!new_word) {
-				new_word = 1;
+			if (new_word) {
+				new_word = 0;
 				result[i] = my_toupper(&DFLT_CHARSET, result[i]);
 			}
 		} else {
-			new_word = 0;
+			new_word = 1;
 		}
 	}
 
